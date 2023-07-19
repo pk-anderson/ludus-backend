@@ -19,11 +19,16 @@ export async function comparePasswords(
   hashedPassword: string
 ): Promise<boolean> {
   try {
+    if (!hashedPassword) {
+      // Caso a senha criptografada seja undefined, retornar false
+      return false;
+    }
     // Comparando a senha com o hash armazenado
     const isMatch = await bcrypt.compare(password, hashedPassword);
 
     return isMatch;
   } catch (error) {
-    throw new Error('Erro ao comparar as senhas.');
+    console.error('Erro ao comparar as senhas:', error);
+    throw new Error('Erro ao comparar as senhas. Verifique o console para mais detalhes.');
   }
 }
