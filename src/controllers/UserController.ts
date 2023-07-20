@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { pool } from '../index';
 import { encryptPassword, comparePasswords } from '../utils/encryptor';
 import { isValidEmail, isValidPassword } from '../utils/validations';
-import { validateToken } from '../middlewares/AuthMiddleware'
+import ms from 'ms';
 import { User } from '../interfaces/User';
 import jwt from 'jsonwebtoken';
 import { generateSessionId } from '../utils/uuid';
@@ -87,14 +87,26 @@ export async function login(req: Request, res: Response) {
       return res.status(401).json({ message: 'Credenciais inválidas.' });
     }
 
+    // Gerar o session Id
+    let sessionId = ''
+    while (true) {
+      sessionId = generateSessionId();
+      const checkSessionIdQuery = 'SELECT COUNT(*) FROM tb_access WHERE session_id = $1';
+      const checkSessionIdValues = [sessionId];
+      const { rows } = await pool.query(checkSessionIdQuery, checkSessionIdValues);
+      const count = parseInt(rows[0].count, 10);
+
+      if (count === 0) {
+        // O session ID não existe na tabela, pode ser usado
+        break;
+      }
+    }
     // Gerar o token JWT
-    const sessionId = generateSessionId();
     const tokenPayload = {
       id: user.id,
       email: user.email,
       sessionId: sessionId,
       username: user.username,
-      revoked: false
     };
 
     const secretKey = process.env.JWT_SECRET;
@@ -119,13 +131,37 @@ export async function login(req: Request, res: Response) {
   }
 }
 
+export async function logout(req: Request, res: Response) {
+  try {
+    // Acesso ao payload decodificado pelo token
+    const decodedToken = req.decodedToken;
+
+    if (!decodedToken) {
+      // Token inválido ou não fornecido
+      return res.status(401).json({ message: 'Acesso não autorizado.' });
+    }
+
+    // Obter o sessionId do usuário autenticado
+    const sessionId = decodedToken.sessionId;
+
+    // Atualizar o campo 'revoked' do token para true
+    const updateTokenQuery = 'UPDATE tb_access SET revoked = true WHERE session_id = $1';
+    const updateTokenValues = [sessionId];
+    await pool.query(updateTokenQuery, updateTokenValues);
+
+    // Retornar uma mensagem de sucesso
+    res.status(200).json({ message: 'Logout realizado com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao realizar logout:', error);
+    res.status(500).json({ message: 'Erro ao realizar logout.' });
+  }
+}
+
 // Rota para listar os usuários cadastrados
 export async function listUsers(req: Request, res: Response) {
   try {
-    // Obter o token do cabeçalho da requisição e definir um valor padrão vazio caso seja undefined
-    const token = req.headers.authorization?.split(' ')[1] ?? ''; // Formato esperado: "Bearer <token>"
-    // Validar o token
-    const decodedToken = validateToken(token);
+    // Acesso ao payload decodificado pelo token
+    const decodedToken = req.decodedToken;
 
     if (!decodedToken) {
       // Token inválido ou não fornecido
@@ -150,10 +186,8 @@ export async function listUsers(req: Request, res: Response) {
 // Rota para buscar um usuário por id
 export async function getUserById(req: Request, res: Response) {
   try {
-    // Obter o token do cabeçalho da requisição e definir um valor padrão vazio caso seja undefined
-    const token = req.headers.authorization?.split(' ')[1] ?? ''; // Formato esperado: "Bearer <token>"
-    // Validar o token
-    const decodedToken = validateToken(token);
+    // Acesso ao payload decodificado pelo token
+    const decodedToken = req.decodedToken;
 
     if (!decodedToken) {
       // Token inválido ou não fornecido
@@ -186,17 +220,15 @@ export async function getUserById(req: Request, res: Response) {
     res.status(200).json(userResponse);
   } catch (error) {
     console.error('Erro ao buscar usuário:', error);
-    res.status(500).json({ message: 'Erro ao buscar usuário.' });
+    res.status(500).json({ message: `Erro ao buscar usuário: ${error}` });
   }
 }
 
 // Deletar usuário por id
 export async function deleteUserById(req: Request, res: Response) {
   try {
-    // Obter o token do cabeçalho da requisição e definir um valor padrão vazio caso seja undefined
-    const token = req.headers.authorization?.split(' ')[1] ?? ''; // Formato esperado: "Bearer <token>"
-    // Validar o token e obter o ID do usuário autenticado
-    const decodedToken = validateToken(token);
+    // Acesso ao payload decodificado pelo token
+    const decodedToken = req.decodedToken;
 
     if (!decodedToken || !decodedToken.id) {
       // Token inválido ou não contém o ID do usuário autenticado
@@ -223,17 +255,15 @@ export async function deleteUserById(req: Request, res: Response) {
     res.status(200).json({ message: 'Usuário deletado com sucesso.' });
   } catch (error) {
     console.error('Erro ao deletar usuário:', error);
-    res.status(500).json({ message: 'Erro ao deletar usuário.' });
+    res.status(500).json({ message: `Erro ao deletar usuário: ${error}` });
   }
 }
 
 // Atualizar usuário
 export async function updateUserById(req: Request, res: Response) {
   try {
-    // Obter o token do cabeçalho da requisição e definir um valor padrão vazio caso seja undefined
-    const token = req.headers.authorization?.split(' ')[1] ?? ''; // Formato esperado: "Bearer <token>"
-    // Validar o token e obter o ID do usuário autenticado
-    const decodedToken = validateToken(token);
+    // Acesso ao payload decodificado pelo token
+    const decodedToken = req.decodedToken;
 
     if (!decodedToken || !decodedToken.id) {
       // Token inválido ou não contém o ID do usuário autenticado
@@ -255,8 +285,19 @@ export async function updateUserById(req: Request, res: Response) {
     const { username, email, password, avatar_url, bio } = req.body;
 
     // Verifica se o email foi fornecido e se é válido
-    if (email && !isValidEmail(email)) {
-      return res.status(400).json({ message: 'O email enviado não é válido.' });
+    if (email !== undefined) {
+      if (!isValidEmail(email)) {
+        return res.status(400).json({ message: 'O email enviado não é válido.' });
+      }
+
+      // Verifica se o novo email já está em uso
+      const checkEmailQuery = 'SELECT id FROM tb_users WHERE email = $1';
+      const checkEmailValues = [email];
+      const existingUserWithEmail = await pool.query(checkEmailQuery, checkEmailValues);
+
+      if (existingUserWithEmail.rows.length > 0) {
+        return res.status(400).json({ message: 'O email fornecido já está em uso por outro usuário.' });
+      }
     }
 
     // Montar a query SQL de atualização dos dados do usuário
@@ -307,7 +348,7 @@ export async function updateUserById(req: Request, res: Response) {
     res.status(200).json({ message: 'Dados do usuário atualizados com sucesso.' });
   } catch (error) {
     console.error('Erro ao atualizar dados do usuário:', error);
-    res.status(500).json({ message: 'Erro ao atualizar dados do usuário.' });
+    res.status(500).json({ message: `Erro ao atualizar dados do usuário: ${error}` });
   }
 }
 
@@ -373,6 +414,6 @@ export async function reactivateUser(req: Request, res: Response) {
     res.status(200).json({ message: 'Conta reativada com sucesso.', token });
   } catch (error) {
     console.error('Erro ao reativar conta:', error);
-    res.status(500).json({ message: 'Erro ao reativar conta.' });
+    res.status(500).json({ message: `Erro ao reativar conta: ${error}` });
   }
 }

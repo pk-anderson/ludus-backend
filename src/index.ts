@@ -3,6 +3,7 @@ import { Pool } from 'pg';
 import dotenv from 'dotenv';
 import usersRoutes from './routes/UserRoutes';
 import testRoutes from './routes/TestRoutes';
+import communityRoutes from './routes/CommunityRoutes'
 
 dotenv.config(); // Carregar variáveis de ambiente do arquivo .env
 
@@ -33,6 +34,9 @@ app.use('/', testRoutes);
 
 // Utilizar as rotas relacionadas aos usuários
 app.use('/users', usersRoutes);
+
+// Utilizar as rotas relacionadas às comunidades
+app.use('/community', communityRoutes);
 
 
 const PORT = 3000;
