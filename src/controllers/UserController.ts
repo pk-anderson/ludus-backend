@@ -259,7 +259,7 @@ export async function deleteUserById(req: Request, res: Response) {
   }
 }
 
-// Atualizar usuário
+// Função para atualizar usuário
 export async function updateUserById(req: Request, res: Response) {
   try {
     // Acesso ao payload decodificado pelo token
@@ -284,7 +284,22 @@ export async function updateUserById(req: Request, res: Response) {
     // Obter os dados enviados no corpo da requisição
     const { username, email, password, avatar_url, bio } = req.body;
 
-    // Verifica se o email foi fornecido e se é válido
+    // Consultar o usuário no banco de dados para obter os dados atuais
+    const getUserQuery = 'SELECT * FROM tb_users WHERE id = $1';
+    const getUserValues = [userId];
+    const userResult = await pool.query(getUserQuery, getUserValues);
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Usuário não encontrado.' });
+    }
+
+    const user = userResult.rows[0];
+
+    // Verificar e modificar apenas os campos fornecidos no corpo da requisição
+    if (username !== undefined) {
+      user.username = username;
+    }
+
     if (email !== undefined) {
       if (!isValidEmail(email)) {
         return res.status(400).json({ message: 'O email enviado não é válido.' });
@@ -298,46 +313,28 @@ export async function updateUserById(req: Request, res: Response) {
       if (existingUserWithEmail.rows.length > 0) {
         return res.status(400).json({ message: 'O email fornecido já está em uso por outro usuário.' });
       }
-    }
 
-    // Montar a query SQL de atualização dos dados do usuário
-    const updateColumns: string[] = [];
-    const updateValues: any[] = [];
-
-    if (username !== undefined) {
-      updateColumns.push('username');
-      updateValues.push(username);
-    }
-
-    if (email !== undefined) {
-      updateColumns.push('email');
-      updateValues.push(email);
+      user.email = email;
     }
 
     if (password !== undefined) {
-      updateColumns.push('password');
-      updateValues.push(password);
+      user.password = password;
     }
 
     if (avatar_url !== undefined) {
-      updateColumns.push('avatar_url');
-      updateValues.push(avatar_url);
+      user.avatar_url = avatar_url;
     }
 
     if (bio !== undefined) {
-      updateColumns.push('bio');
-      updateValues.push(bio);
+      user.bio = bio;
     }
 
-    // Incluir o campo 'updated_at' na query e adicionar a data atual como valor
-    updateColumns.push('updated_at');
-    updateValues.push(new Date());
+    // Incluir o campo 'updated_at' no objeto do usuário e adicionar a data atual como valor
+    user.updated_at = new Date();
 
-    if (updateColumns.length === 0) {
-      // Nenhum campo foi fornecido para atualização
-      return res.status(400).json({ message: 'Nenhum dado fornecido para atualização.' });
-    }
-
+    // Montar a query SQL de atualização dos dados do usuário
+    const updateColumns = Object.keys(user);
+    const updateValues = Object.values(user);
     const updateQuery = `UPDATE tb_users SET ${updateColumns.map((column, index) => `${column} = $${index + 1}`).join(', ')} WHERE id = $${updateColumns.length + 1}`;
     const updateValuesWithId = [...updateValues, userId];
 
