@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { pool } from '../index';
 import { encryptPassword, comparePasswords } from '../utils/encryptor';
 import { isValidEmail, isValidPassword } from '../utils/validations';
-import ms from 'ms';
 import { User } from '../interfaces/User';
 import jwt from 'jsonwebtoken';
 import { generateSessionId } from '../utils/uuid';
@@ -282,7 +281,7 @@ export async function updateUserById(req: Request, res: Response) {
     }
 
     // Obter os dados enviados no corpo da requisição
-    const { username, email, password, avatar_url, bio } = req.body;
+    const { username, email, avatar_url, bio } = req.body;
 
     // Consultar o usuário no banco de dados para obter os dados atuais
     const getUserQuery = 'SELECT * FROM tb_users WHERE id = $1';
@@ -317,10 +316,6 @@ export async function updateUserById(req: Request, res: Response) {
       user.email = email;
     }
 
-    if (password !== undefined) {
-      user.password = password;
-    }
-
     if (avatar_url !== undefined) {
       user.avatar_url = avatar_url;
     }
@@ -333,13 +328,22 @@ export async function updateUserById(req: Request, res: Response) {
     user.updated_at = new Date();
 
     // Montar a query SQL de atualização dos dados do usuário
-    const updateColumns = Object.keys(user);
-    const updateValues = Object.values(user);
-    const updateQuery = `UPDATE tb_users SET ${updateColumns.map((column, index) => `${column} = $${index + 1}`).join(', ')} WHERE id = $${updateColumns.length + 1}`;
-    const updateValuesWithId = [...updateValues, userId];
+    const updateQuery = `
+      UPDATE tb_users 
+      SET username = $1, email = $2, avatar_url = $3, bio = $4, updated_at = $5
+      WHERE id = $6`;
+
+    const updateValues = [
+      user.username,
+      user.email,
+      user.avatar_url,
+      user.bio,
+      user.updated_at,
+      userId,
+    ];
 
     // Executar a query SQL para atualizar os dados do usuário no banco de dados
-    await pool.query(updateQuery, updateValuesWithId);
+    await pool.query(updateQuery, updateValues);
 
     // Retornar uma mensagem de sucesso
     res.status(200).json({ message: 'Dados do usuário atualizados com sucesso.' });
@@ -348,6 +352,7 @@ export async function updateUserById(req: Request, res: Response) {
     res.status(500).json({ message: `Erro ao atualizar dados do usuário: ${error}` });
   }
 }
+
 
 // Reativar usuário
 export async function reactivateUser(req: Request, res: Response) {
