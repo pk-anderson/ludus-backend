@@ -6,3 +6,7 @@ export function isValidEmail(email: string): boolean {
     return emailRegex.test(email);
   }
   
+// Validação do número de caracteres da senha
+export function isValidPassword(password: string): boolean {
+  return password.length >= 8;
+}

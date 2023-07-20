@@ -10,7 +10,7 @@ export async function encryptPassword(password: string): Promise<string> {
 
     return hashedPassword;
   } catch (error) {
-    throw new Error('Erro ao criptografar a senha.');
+    throw new Error(`Erro ao criptografar a senha: ${error}`);
   }
 }
 
@@ -29,6 +29,6 @@ export async function comparePasswords(
     return isMatch;
   } catch (error) {
     console.error('Erro ao comparar as senhas:', error);
-    throw new Error('Erro ao comparar as senhas. Verifique o console para mais detalhes.');
+    throw new Error(`Erro ao comparar as senhas: ${error}`);
   }
 }

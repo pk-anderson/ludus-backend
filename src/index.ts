@@ -1,4 +1,3 @@
-// index.ts
 import express from 'express';
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
@@ -39,7 +38,7 @@ app.use('/users', usersRoutes);
 const PORT = 3000;
 
 app.listen(PORT, () => {
-  console.log(`Servidor Express em execução na porta ${PORT}`);
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
 
 export { pool };

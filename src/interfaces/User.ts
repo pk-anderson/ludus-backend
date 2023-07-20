@@ -10,4 +10,3 @@ export interface User {
     deleted_at?: Date;
     is_active?: boolean;
   }
-  

@@ -1,4 +1,3 @@
-// routes/testRoutes.ts
 import express from 'express';
 import { pool } from '../index';
 
@@ -14,7 +13,7 @@ router.get('/', async (req, res) => {
     res.send(`Conexão com o banco de dados PostgreSQL bem-sucedida. Hora atual do banco de dados: ${currentTime}`);
   } catch (error) {
     console.error('Erro ao conectar ao banco de dados:', error);
-    res.status(500).send('Erro ao conectar ao banco de dados.');
+    res.status(500).send(`Erro ao conectar ao banco de dados: ${error}`);
   }
 });
 
