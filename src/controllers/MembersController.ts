@@ -111,7 +111,7 @@ export async function listMembers(req: Request, res: Response) {
         cm.deleted_at
       FROM tb_community_members cm
       JOIN tb_users u ON cm.user_id = u.id
-      WHERE cm.community_id = $1 AND cm.deleted_at IS NULL
+      WHERE cm.community_id = $1 AND cm.deleted_at IS NULL AND u.is_active = true
     `;
   
       const listMembersValues = [communityId];
