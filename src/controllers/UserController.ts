@@ -419,3 +419,41 @@ export async function reactivateUser(req: Request, res: Response) {
     res.status(500).json({ message: `Erro ao reativar conta: ${error}` });
   }
 }
+
+// Função para atualizar a senha do usuário
+export async function updatePassword(req: Request, res: Response) {
+  try {
+    // Acesso ao payload decodificado pelo token
+    const decodedToken = req.decodedToken;
+
+    if (!decodedToken || !decodedToken.id) {
+      // Token inválido ou não contém o ID do usuário autenticado
+      return res.status(401).json({ message: 'Acesso não autorizado.' });
+    }
+
+    // Obter o ID do usuário autenticado
+    const authenticatedUserId = decodedToken.id;
+
+    // Obter a nova senha enviada no corpo da requisição
+    const { password } = req.body;
+    
+    // Verificar se a senha é válida
+    if (!isValidPassword(password)) {
+      return res.status(400).json({ message: 'A senha utilizada deve ter pelo menos 8 caracteres.' });
+    }
+
+    // Criptografar a nova senha
+    const hashedPassword = await encryptPassword(password);
+
+    // Atualizar a senha no banco de dados
+    const updatePasswordQuery = 'UPDATE tb_users SET password = $1 WHERE id = $2';
+    const updatePasswordValues = [hashedPassword, authenticatedUserId];
+    await pool.query(updatePasswordQuery, updatePasswordValues);
+
+    // Retornar uma mensagem de sucesso
+    res.status(200).json({ message: 'Senha atualizada com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao atualizar senha do usuário:', error);
+    res.status(500).json({ message: `Erro ao atualizar senha do usuário: ${error}` });
+  }
+}

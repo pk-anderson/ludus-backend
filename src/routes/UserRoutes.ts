@@ -7,7 +7,8 @@ import {    signup,
             getUserById, 
             deleteUserById, 
             updateUserById, 
-            reactivateUser 
+            reactivateUser,
+            updatePassword 
         } from '../controllers/UserController';
 
 const router = express.Router();
@@ -28,12 +29,15 @@ router.get('/all', validateToken, listUsers);
 router.get('/:id', validateToken, getUserById);
 
 // Rota para atualizar um usuário por id
-router.put('/:id', validateToken, updateUserById);
+router.put('/update/:id', validateToken, updateUserById);
 
 // Rota para deletar um usuário por id
 router.delete('/:id', validateToken, deleteUserById);
 
 // Rota para reativar um usuário por id
 router.post('/reactivate', reactivateUser);
+
+// Rota para atualizar a senha do usuário
+router.put('/update-password', validateToken, updatePassword);
 
 export default router;
