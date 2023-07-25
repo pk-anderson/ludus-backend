@@ -5,6 +5,7 @@ import usersRoutes from './routes/UserRoutes';
 import testRoutes from './routes/TestRoutes';
 import communityRoutes from './routes/CommunityRoutes'
 import memberRoutes from './routes/MemberRoutes'
+import followersRoutes from './routes/FollowersRoutes'
 
 dotenv.config(); // Carregar variáveis de ambiente do arquivo .env
 
@@ -41,6 +42,9 @@ app.use('/community', communityRoutes);
 
 // Utilizar as rotas relacionadas a membros de comunidades
 app.use('/members', memberRoutes);
+
+// Utilizar as rotas relacionadas aos seguidores
+app.use('/followers', followersRoutes);
 
 
 const PORT = 3000;
