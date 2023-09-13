@@ -9,7 +9,7 @@ import {
     listOwnCommunities,
     listCommunitiesByUserId,
     updateCommunity
-} from '../controllers/CommunityController';
+} from '../repositories/CommunityRepository';
 
 const router = express.Router();
 

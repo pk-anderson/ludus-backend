@@ -4,7 +4,7 @@ import {
     followCommunity,
     listMembers,
     unfollowCommunity
-} from '../controllers/MembersController';
+} from '../repositories/MembersRepository';
 
 const router = express.Router();
 

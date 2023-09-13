@@ -7,7 +7,7 @@ import {
     listFollowingUsers,
     listFollowingOfUser,
     unfollowUser
-} from '../controllers/FollowersController';
+} from '../repositories/FollowersRepository';
 
 const router = express.Router();
 

@@ -1,7 +1,11 @@
 import express from 'express';
 import { validateToken } from '../middlewares/AuthMiddleware'
-import {    signup, 
-            login, 
+import {
+    signupHandler,
+    loginHandler,
+    logoutHandler
+} from '../handlers/UserHandlers'
+import {     
             logout,
             listUsers, 
             getUserById, 
@@ -9,18 +13,18 @@ import {    signup,
             updateUserById, 
             reactivateUser,
             updatePassword 
-        } from '../controllers/UserController';
+        } from '../repositories/UserRepository';
 
 const router = express.Router();
 
 // Rota para cadastro de usuário
-router.post('/signup', signup);
+router.post('/signup', signupHandler);
 
 // Rota para autenticação (login) de usuário
-router.post('/login', login);
+router.post('/login', loginHandler);
 
 // Rota para logout de usuário
-router.delete('/logout', validateToken, logout);
+router.delete('/logout', validateToken, logoutHandler);
 
 // Rota para listagem de usuários
 router.get('/all', validateToken, listUsers);

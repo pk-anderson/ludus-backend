@@ -1,4 +1,3 @@
-import { Community } from './../interfaces/Community';
 import { Request, Response } from 'express';
 import { pool } from '../index'; 
 
@@ -23,7 +22,7 @@ export async function createCommunity(req: Request, res: Response) {
     const createCommunityValues = [authenticatedUserId, name, description];
     const createdCommunity = await pool.query(createCommunityQuery, createCommunityValues);
 
-    const response: Community = createdCommunity.rows[0];
+    const response = createdCommunity.rows[0];
 
     // Retornar a nova comunidade criada na resposta
     res.status(201).json(response);
@@ -44,7 +43,7 @@ export async function listCommunities(req: Request, res: Response) {
     `;
     const communitiesResult = await pool.query(listCommunitiesQuery);
 
-    const response: Community[] = communitiesResult.rows;
+    const response = communitiesResult.rows;
 
     res.status(200).json(response);
   } catch (error) {
@@ -74,7 +73,7 @@ export async function listOwnCommunities(req: Request, res: Response, isActive: 
       WHERE c.is_active = $1 AND c.id_creator = $2`;
     const communitiesResult = await pool.query(getCommunitiesQuery, [isActive, authenticatedUserId]);
 
-    const response: Community[] = communitiesResult.rows;
+    const response = communitiesResult.rows;
 
     // Retornar a lista de comunidades do usuário na resposta
     res.status(200).json(response);
@@ -98,7 +97,7 @@ export async function getCommunityById(req: Request, res: Response) {
     const getCommunityValues = [communityId];
     const communityResult = await pool.query(getCommunityQuery, getCommunityValues);
 
-    const response: Community = communityResult.rows[0];
+    const response = communityResult.rows[0];
 
     if (!response) {
       return res.status(404).json({ message: 'Comunidade não encontrada.' });
@@ -147,7 +146,7 @@ export async function listCommunitiesByUserId(req: Request, res: Response) {
       WHERE c.is_active = true AND c.id_creator = $1`;
     const communitiesResult = await pool.query(getCommunitiesQuery, [otherUserId]);
 
-    const response: Community[] = communitiesResult.rows;
+    const response = communitiesResult.rows;
 
     // Retornar a lista de comunidades ativas do outro usuário na resposta
     res.status(200).json(response);
@@ -216,7 +215,7 @@ export async function updateCommunity(req: Request, res: Response) {
 
     const updatedResult = await pool.query(updateCommunityQuery, updateCommunityValues);
 
-    const response: Community = updatedResult.rows[0];
+    const response = updatedResult.rows[0];
 
     // Retornar a comunidade atualizada na resposta
     res.status(200).json(response);
@@ -308,7 +307,7 @@ export async function reactivateCommunity(req: Request, res: Response) {
     const reactivateCommunityValues = [communityId];
     const updatedCommunity = await pool.query(reactivateCommunityQuery, reactivateCommunityValues);
 
-    const response: Community = updatedCommunity.rows[0];
+    const response = updatedCommunity.rows[0];
 
     // Retornar a comunidade reativada na resposta
     res.status(200).json(response);
