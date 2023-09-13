@@ -9,7 +9,9 @@ import dotenv from 'dotenv';
 import {
   CREATE_ENTITY_ERROR,
   FIND_ENTITY_ERROR,
-  REVOKE_ERROR
+  REVOKE_ERROR,
+  LIST_ENTITY_ERROR,
+  DELETE_ENTITY_ERROR
 } from '../utils/consts';
 dotenv.config();
 
@@ -40,7 +42,7 @@ export async function signup(user: User) {
 
     return insertedUser
   } catch (error) {
-    throw new Error(`${CREATE_ENTITY_ERROR}: ${error}`);
+    throw new Error(`${error}`);
   }
 }
 
@@ -51,7 +53,7 @@ export async function getUserByEmail(email: string) {
     const userResult = await pool.query(getUserQuery, getUserValues);
     return userResult.rows.length === 0 ? null : userResult.rows[0];
   } catch (error) {
-    throw new Error(`${FIND_ENTITY_ERROR}: ${error}`);
+    throw new Error(`${error}`);
   }
 }
 
@@ -62,7 +64,7 @@ export async function createAccessToken(userId: number, token: string, sessionId
     const insertAccessTokenValues = [userId, token, sessionId];
     return await pool.query(insertAccessTokenQuery, insertAccessTokenValues);
   } catch (error) {
-    throw new Error(`${CREATE_ENTITY_ERROR}: ${error}`);
+    throw new Error(`${error}`);
   }
 }
 
@@ -72,109 +74,49 @@ export async function logout(sessionId: string) {
     const updateTokenValues = [sessionId];
     await pool.query(updateTokenQuery, updateTokenValues);
   } catch (error) {
-    throw new Error(`${REVOKE_ERROR}: ${error}`);
+    throw new Error(`${error}`);
   }
 }
 
 // Rota para listar os usuários cadastrados
-export async function listUsers(req: Request, res: Response) {
+export async function listUsers() {
   try {
-    // Acesso ao payload decodificado pelo token
-    const decodedToken = req.decodedToken;
-
-    if (!decodedToken) {
-      // Token inválido ou não fornecido
-      return res.status(401).json({ message: 'Acesso não autorizado.' });
-    }
-
     // Consultar todos os usuários no banco de dados
     const getUsersQuery = 'SELECT id, username, email, avatar_url, bio, created_at, updated_at, deleted_at, is_active FROM tb_users';
     const usersResult = await pool.query(getUsersQuery);
 
-    // Mapear os resultados para a interface de resposta
-    const response = usersResult.rows;
+    return usersResult.rows
 
-    // Retornar a lista de usuários na resposta
-    res.status(200).json(response);
   } catch (error) {
-    console.error('Erro ao listar usuários:', error);
-    res.status(500).json({ message: 'Erro ao listar usuários.' });
+    throw new Error(`${error}`);
   }
 }
 
 // Rota para buscar um usuário por id
-export async function getUserById(req: Request, res: Response) {
+export async function getUserById(userId: number) {
   try {
-    // Acesso ao payload decodificado pelo token
-    const decodedToken = req.decodedToken;
-
-    if (!decodedToken) {
-      // Token inválido ou não fornecido
-      return res.status(401).json({ message: 'Acesso não autorizado.' });
-    }
-
-    // Obter o ID do usuário a ser buscado a partir dos parâmetros da URL
-    const userId = parseInt(req.params.id, 10);
 
     // Consultar o usuário no banco de dados pelo ID
     const getUserQuery = 'SELECT id, username, email, avatar_url, bio, created_at, updated_at, deleted_at, is_active FROM tb_users WHERE id = $1';
     const getUserValues = [userId];
     const userResult = await pool.query(getUserQuery, getUserValues);
 
-    if (userResult.rows.length === 0) {
-      // Nenhum usuário encontrado com o ID fornecido
-      return res.status(404).json({ message: 'Usuário não encontrado.' });
-    }
-
-    // Mapear o resultado para a interface de resposta
-    const userResponse = userResult.rows[0];
-
-    // Verificar se usuário está ativo
-    if (!userResponse.is_active) {
-      // O usuário não está ativo
-      return res.status(404).json({ message: 'Usuário não encontrado.' });
-    }
-
-    // Retornar o usuário na resposta
-    res.status(200).json(userResponse);
+    return userResult
   } catch (error) {
-    console.error('Erro ao buscar usuário:', error);
-    res.status(500).json({ message: `Erro ao buscar usuário: ${error}` });
+    throw new Error(`${error}`);
   }
 }
 
 // Deletar usuário por id
-export async function deleteUserById(req: Request, res: Response) {
+export async function deleteUserById(userId: number) {
   try {
-    // Acesso ao payload decodificado pelo token
-    const decodedToken = req.decodedToken;
-
-    if (!decodedToken || !decodedToken.id) {
-      // Token inválido ou não contém o ID do usuário autenticado
-      return res.status(401).json({ message: 'Acesso não autorizado.' });
-    }
-
-    // Obter o ID do usuário autenticado
-    const authenticatedUserId = decodedToken.id;
-
-    // Obter o ID do usuário a ser deletado a partir dos parâmetros da URL
-    const userId = parseInt(req.params.id, 10);
-
-    // Verificar se o usuário autenticado é o proprietário do ID que está sendo deletado
-    if (userId !== authenticatedUserId) {
-      return res.status(403).json({ message: 'Acesso negado. Você não tem permissão para deletar este usuário.' });
-    }
-
     // Deletar o usuário 
     const deleteUserQuery = 'UPDATE tb_users SET deleted_at = NOW(), is_active = false WHERE id = $1';
     const deleteUserValues = [userId];
     await pool.query(deleteUserQuery, deleteUserValues);
 
-    // Retornar uma mensagem de sucesso
-    res.status(200).json({ message: 'Usuário deletado com sucesso.' });
   } catch (error) {
-    console.error('Erro ao deletar usuário:', error);
-    res.status(500).json({ message: `Erro ao deletar usuário: ${error}` });
+    throw new Error(`${error}`);
   }
 }
 

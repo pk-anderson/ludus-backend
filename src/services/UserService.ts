@@ -1,3 +1,4 @@
+import { FIND_ENTITY_ERROR } from './../utils/consts';
 import { User } from './../interfaces/User';
 import { generateSessionId } from '../utils/uuid';
 import jwt from 'jsonwebtoken';
@@ -7,7 +8,10 @@ import {
     getUserByEmail,
     createAccessToken,
     checkSessionIdExists,
-    logout
+    logout,
+    listUsers,
+    getUserById,
+    deleteUserById
 } from './../repositories/UserRepository'
 import { isValidEmail, isValidPassword } from '../utils/validations';
 import { encryptPassword, comparePasswords } from '../utils/encryptor';
@@ -24,7 +28,10 @@ import {
     CREATE_ENTITY_ERROR,
     CREATE_USER_SUCCESS,
     LOGOUT_SUCCESSFUL,
-    LOGOUT_ERROR
+    LOGOUT_ERROR,
+    LIST_ENTITY_ERROR,
+    DELETE_USER_SUCCESS,
+    DELETE_ENTITY_ERROR
   } from '../utils/consts';
 
   export async function signupService(user: User) {
@@ -159,8 +166,107 @@ export async function loginService(email: string, password: string) {
     try {
       await logout(sessionId); // Chama a função do repositório para revogar o token
   
-      return { success: true, statusCode: 200, data: { message: LOGOUT_SUCCESSFUL } };
+      return { success: true, 
+        statusCode: 200, 
+        data: { 
+          message: LOGOUT_SUCCESSFUL 
+        } 
+      };
     } catch (error) {
-      return { success: false, statusCode: 500, error: LOGOUT_ERROR };
+      return { success: false, 
+        statusCode: 500, 
+        error: `${LOGOUT_ERROR}:${error}`
+      };
+    }
+  }
+
+  export async function listService() {
+    try {
+      const data: User[] = await listUsers(); // Chama a função do repositório para listar usuários
+  
+      return { success: true, 
+        statusCode: 200, 
+        data
+      };
+    } catch (error) {
+      return { success: false, 
+        statusCode: 500, 
+        error: `${LIST_ENTITY_ERROR}:${error}`
+      };
+    }
+  }
+
+  export async function findService(userId: number) {
+    try {
+      const userResult = await getUserById(userId); // Chama a função do repositório para buscar usuário
+  
+      if (userResult.rows.length === 0) {
+        // Nenhum usuário encontrado com o ID fornecido
+        return { success: false, 
+          statusCode: 404, 
+          error: FIND_ENTITY_ERROR 
+        };
+      }
+  
+      // Mapear o resultado para a interface de resposta
+      const user: User = userResult.rows[0];
+  
+      // Verificar se usuário está ativo
+      if (!user.is_active) {
+        // O usuário não está ativo
+        return { success: false, 
+          statusCode: 404, 
+          error: FIND_ENTITY_ERROR 
+        };
+      }
+
+      return { success: true, 
+        statusCode: 200, 
+        data: user
+      };
+    } catch (error) {
+      return { success: false, 
+        statusCode: 500, 
+        error: `${FIND_ENTITY_ERROR}:${error}`
+      };
+    }
+  }
+
+  export async function deleteService(userId: number) {
+    try {
+      const userResult = await getUserById(userId)
+      if (userResult.rows.length === 0) {
+        // Nenhum usuário encontrado com o ID fornecido
+        return { success: false, 
+          statusCode: 404, 
+          error: FIND_ENTITY_ERROR 
+        };
+      }
+  
+      // Mapear o resultado para a interface de resposta
+      const user: User = userResult.rows[0];
+  
+      // Verificar se usuário está ativo
+      if (!user.is_active) {
+        // O usuário não está ativo
+        return { success: false, 
+          statusCode: 404, 
+          error: FIND_ENTITY_ERROR 
+        };
+      }
+      await deleteUserById(userId); // Chama a função do repositório para buscar usuário
+  
+      return { success: true, 
+        statusCode: 200, 
+        data: {
+          message: DELETE_USER_SUCCESS
+        }
+      };
+
+    } catch (error) {
+      return { success: false, 
+        statusCode: 500, 
+        error: `${DELETE_ENTITY_ERROR}:${error}`
+      }
     }
   }

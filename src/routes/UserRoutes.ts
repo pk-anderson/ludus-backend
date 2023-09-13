@@ -3,13 +3,12 @@ import { validateToken } from '../middlewares/AuthMiddleware'
 import {
     signupHandler,
     loginHandler,
-    logoutHandler
+    logoutHandler,
+    listHandler,
+    findHandler,
+    deleteHandler
 } from '../handlers/UserHandlers'
 import {     
-            logout,
-            listUsers, 
-            getUserById, 
-            deleteUserById, 
             updateUserById, 
             reactivateUser,
             updatePassword 
@@ -27,16 +26,16 @@ router.post('/login', loginHandler);
 router.delete('/logout', validateToken, logoutHandler);
 
 // Rota para listagem de usuários
-router.get('/all', validateToken, listUsers);
+router.get('/all', validateToken, listHandler);
 
 // Rota para buscar um usuário por id
-router.get('/:id', validateToken, getUserById);
+router.get('/:id', validateToken, findHandler);
 
 // Rota para atualizar um usuário por id
 router.put('/update/:id', validateToken, updateUserById);
 
 // Rota para deletar um usuário por id
-router.delete('/:id', validateToken, deleteUserById);
+router.delete('/delete', validateToken, deleteHandler);
 
 // Rota para reativar um usuário por id
 router.post('/reactivate', reactivateUser);
