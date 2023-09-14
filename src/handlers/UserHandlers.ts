@@ -6,7 +6,8 @@ import {
     deleteService,
     updateService,
     reactivateService,
-    updatePasswordService
+    updatePasswordService,
+    profilePicService
  } from '../services/UserService';
 import { User } from './../interfaces/User';
 import { INTERNAL_SERVER_ERROR } from './../utils/consts'
@@ -14,6 +15,13 @@ import { INTERNAL_SERVER_ERROR } from './../utils/consts'
 export async function signupHandler(req: Request, res: Response) {
     try {
       const user: User = req.body
+      const profilePic = req.file;
+      if (profilePic) {
+        // Acesse os dados da imagem como bytes em userImage.buffer
+        const imageBytes = profilePic.buffer;
+        user.profile_pic = imageBytes
+      }
+      
       const result = await signupService(user);
   
       if (result.success) {
@@ -52,6 +60,25 @@ export async function signupHandler(req: Request, res: Response) {
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.data);
+      } else {
+        res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
+      }
+    } catch (error) {
+      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      res.status(500).json({ message: INTERNAL_SERVER_ERROR });
+    }
+  }
+
+  export async function profilePicHandler(req: Request, res: Response) {
+    try {
+      // Acesso ao payload decodificado pelo token
+      const decodedToken = req.decodedToken;
+      console.log(decodedToken!.id)
+      
+      const result = await profilePicService(decodedToken!.id);
+  
+      if (result.success) {
+        res.status(result.statusCode || 200).json(result.imgURL);
       } else {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }

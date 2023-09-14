@@ -122,10 +122,8 @@ import {
           error: FIND_ENTITY_ERROR 
         };
       }
-      console.log(userResult)
       // Mapear o resultado para a interface de resposta
       const user: User = userResult;
-      console.log(user)
       // Verificar se usuário está ativo
       if (!user.is_active) {
         // O usuário não está ativo
@@ -138,6 +136,52 @@ import {
       return { success: true, 
         statusCode: 200, 
         data: user
+      };
+    } catch (error) {
+      return { success: false, 
+        statusCode: 500, 
+        error: `${FIND_ENTITY_ERROR}:${error}`
+      };
+    }
+  }
+
+  export async function profilePicService(userId: number) {
+    try {
+      const userResult = await getUserById(userId); // Chama a função do repositório para buscar usuário
+  
+      if (!userResult) {
+        // Nenhum usuário encontrado com o ID fornecido
+        return { success: false, 
+          statusCode: 404, 
+          error: FIND_ENTITY_ERROR 
+        };
+      }
+      // Mapear o resultado para a interface de resposta
+      const user: User = userResult;
+      // Verificar se usuário está ativo
+      if (!user.is_active) {
+        // O usuário não está ativo
+        return { success: false, 
+          statusCode: 404, 
+          error: FIND_ENTITY_ERROR 
+        };
+      }
+
+      if (!user.profile_pic) {
+        // imagem de perfil não existe
+        return { success: false, 
+          statusCode: 404, 
+          error: FIND_ENTITY_ERROR 
+        };
+      }
+      // Converter Uint8Array para base64
+      const base64ImageData = Buffer.from(user.profile_pic).toString('base64');
+      // Criar a URL de dados
+      const imgURL = `data:image/jpeg;base64,${base64ImageData}`;
+
+      return { success: true, 
+        statusCode: 200, 
+        imgURL
       };
     } catch (error) {
       return { success: false, 

@@ -7,16 +7,24 @@ import {
     deleteHandler,
     updateHandler,
     reactivateHandler,
-    updatePasswordHandler
+    updatePasswordHandler,
+    profilePicHandler
 } from '../handlers/UserHandlers'
+import multer from 'multer';
+
+const storage = multer.memoryStorage(); // Armazena os dados do arquivo em memória
+const upload = multer({ storage: storage });
 
 const router = express.Router();
 
 // Rota para cadastro de usuário
-router.post('/signup', signupHandler);
+router.post('/signup', upload.single('file'), signupHandler);
 
 // Rota para listagem de usuários
 router.get('/all', validateToken, listHandler);
+
+// Rota para buscar a imagem de perfil do usuário
+router.get('/picture', validateToken, profilePicHandler);
 
 // Rota para buscar um usuário por id
 router.get('/:id', validateToken, findHandler);
