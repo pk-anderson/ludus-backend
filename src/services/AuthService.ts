@@ -9,7 +9,6 @@ import { getUserByEmail } from './../repositories/UserRepository'
 import { comparePasswords } from '../utils/encryptor';
 import {
     CREDENTIALS_INVALID,
-    USER_DELETED_OR_INACTIVE,
     ENV_VARIABLE_NOT_CONFIGURED,
     AUTHENTICATION_SUCCESSFUL,
     AUTHENTICATION_ERROR,
@@ -30,7 +29,7 @@ export async function loginService(email: string, password: string) {
       if (!user.is_active) {
         return { success: false, 
             statusCode: 401, 
-            error: USER_DELETED_OR_INACTIVE };
+            error: CREDENTIALS_INVALID };
       }
   
       const isPasswordMatch = await comparePasswords(password, user.password);

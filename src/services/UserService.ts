@@ -29,7 +29,6 @@ import {
     DELETE_ENTITY_ERROR,
     UPDATE_USER_SUCCESS,
     UPDATE_ENTITY_ERROR,
-    REACTIVATE_ERROR,
     FIND_ENTITY_ERROR
   } from '../utils/consts';
 
