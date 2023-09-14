@@ -71,14 +71,13 @@ export async function signupHandler(req: Request, res: Response) {
 
   export async function profilePicHandler(req: Request, res: Response) {
     try {
-      // Acesso ao payload decodificado pelo token
-      const decodedToken = req.decodedToken;
-      console.log(decodedToken!.id)
+      // Obter o ID do usuário a ser buscado a partir dos parâmetros da URL
+      const userId = parseInt(req.params.id, 10);
       
-      const result = await profilePicService(decodedToken!.id);
+      const result = await profilePicService(userId);
   
       if (result.success) {
-        res.status(result.statusCode || 200).json(result.imgURL);
+        res.status(result.statusCode || 200).json(result.data);
       } else {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }

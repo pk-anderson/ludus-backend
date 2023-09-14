@@ -46,7 +46,7 @@ export async function getUserByEmail(email: string) {
 export async function listUsers() {
   try {
     // Consultar todos os usuários no banco de dados
-    const getUsersQuery = 'SELECT id, username, email, profile_pic, bio, created_at, updated_at, deleted_at, is_active FROM tb_users';
+    const getUsersQuery = 'SELECT id, username, email, bio, created_at, updated_at, deleted_at, is_active, profile_pic FROM tb_users';
     const usersResult = await pool.query(getUsersQuery);
 
     return usersResult.rows
@@ -61,7 +61,7 @@ export async function getUserById(userId: number) {
   try {
 
     // Consultar o usuário no banco de dados pelo ID
-    const getUserQuery = 'SELECT id, username, email, profile_pic, bio, created_at, updated_at, deleted_at, is_active FROM tb_users WHERE id = $1';
+    const getUserQuery = 'SELECT id, username, email, bio, created_at, updated_at, deleted_at, is_active, profile_pic FROM tb_users WHERE id = $1';
     const getUserValues = [userId];
     const userResult = await pool.query(getUserQuery, getUserValues);
 

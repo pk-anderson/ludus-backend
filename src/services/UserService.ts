@@ -1,4 +1,4 @@
-import { User } from './../interfaces/User';
+import { User, UserResponse } from './../interfaces/User';
 import { generateSessionId } from '../utils/uuid';
 import jwt from 'jsonwebtoken';
 import { 
@@ -97,7 +97,17 @@ import {
 
   export async function listService() {
     try {
-      const data: User[] = await listUsers(); // Chama a função do repositório para listar usuários
+      const userResult = await listUsers(); // Chama a função do repositório para listar usuários
+
+      // Transforme o campo profile_pic de todos os usuários em URLs base64
+      for (const item of userResult) {
+        if (item.profile_pic) {
+          const dataURL = `data:image/jpeg;base64,${item.profile_pic.toString('base64')}`;
+          item.profile_pic = dataURL;
+        }
+      }
+
+      const data: UserResponse[] = userResult
   
       return { success: true, 
         statusCode: 200, 
@@ -115,23 +125,20 @@ import {
     try {
       const userResult = await getUserById(userId); // Chama a função do repositório para buscar usuário
   
-      if (!userResult) {
+      if (!userResult || !userResult.is_active) {
         // Nenhum usuário encontrado com o ID fornecido
         return { success: false, 
           statusCode: 404, 
           error: FIND_ENTITY_ERROR 
         };
       }
-      // Mapear o resultado para a interface de resposta
-      const user: User = userResult;
-      // Verificar se usuário está ativo
-      if (!user.is_active) {
-        // O usuário não está ativo
-        return { success: false, 
-          statusCode: 404, 
-          error: FIND_ENTITY_ERROR 
-        };
+      // Transforme o campo profile_pic em uma URL base64
+      if (userResult.profile_pic) {
+        const dataURL = `data:image/jpeg;base64,${userResult.profile_pic.toString('base64')}`;
+        userResult.profile_pic = dataURL;
       }
+      // Mapear o resultado para a interface de resposta
+      const user: UserResponse = userResult;
 
       return { success: true, 
         statusCode: 200, 
@@ -149,7 +156,7 @@ import {
     try {
       const userResult = await getUserById(userId); // Chama a função do repositório para buscar usuário
   
-      if (!userResult) {
+      if (!userResult || !userResult.is_active) {
         // Nenhum usuário encontrado com o ID fornecido
         return { success: false, 
           statusCode: 404, 
@@ -158,14 +165,6 @@ import {
       }
       // Mapear o resultado para a interface de resposta
       const user: User = userResult;
-      // Verificar se usuário está ativo
-      if (!user.is_active) {
-        // O usuário não está ativo
-        return { success: false, 
-          statusCode: 404, 
-          error: FIND_ENTITY_ERROR 
-        };
-      }
 
       if (!user.profile_pic) {
         // imagem de perfil não existe
@@ -181,7 +180,9 @@ import {
 
       return { success: true, 
         statusCode: 200, 
-        imgURL
+        data: {
+          imgURL
+        }
       };
     } catch (error) {
       return { success: false, 
@@ -194,25 +195,14 @@ import {
   export async function deleteService(userId: number) {
     try {
       const userResult = await getUserById(userId)
-      if (!userResult) {
+      if (!userResult || !userResult.is_active) {
         // Nenhum usuário encontrado com o ID fornecido
         return { success: false, 
           statusCode: 404, 
           error: FIND_ENTITY_ERROR 
         };
-      }
-  
-      // Mapear o resultado para a interface de resposta
-      const user: User = userResult;
-  
-      // Verificar se usuário está ativo
-      if (!user.is_active) {
-        // O usuário não está ativo
-        return { success: false, 
-          statusCode: 404, 
-          error: FIND_ENTITY_ERROR 
-        };
-      }
+      }  
+
       await deleteUserById(userId); // Chama a função do repositório para buscar usuário
   
       return { success: true, 
@@ -233,7 +223,7 @@ import {
   export async function updateService(user: User) {
     try {
       const userResult = await getUserById(user.id)
-      if (!userResult) {
+      if (!userResult || !userResult.is_active) {
         // Nenhum usuário encontrado com o ID fornecido
         return { success: false, 
           statusCode: 404, 
@@ -242,14 +232,7 @@ import {
       }
       // Mapear o resultado para a interface de resposta
       const updatedUser: User = userResult;
-      // Verificar se usuário está ativo
-      if (!updatedUser.is_active) {
-        // O usuário não está ativo
-        return { success: false, 
-          statusCode: 404, 
-          error: FIND_ENTITY_ERROR 
-        };
-      }
+
     // Verificar e modificar apenas os campos fornecidos no corpo da requisição
     if (user.username !== undefined) {
       updatedUser.username = user.username;
@@ -307,25 +290,17 @@ import {
   export async function reactivateService(email: string, password: string ) {
     try {
       const userResult = await getUserByEmail(email)
-      if (!userResult) {
-        // Nenhum usuário encontrado com o email fornecido
+      if (!userResult || userResult.is_active) {
+        // Nenhum usuário encontrado com o ID fornecido
         return { success: false, 
-          statusCode: 400, 
-          error: CREDENTIALS_INVALID 
+          statusCode: 404, 
+          error: FIND_ENTITY_ERROR 
         };
       }
   
       // Mapear o resultado para a interface de resposta
       const user: User = userResult;
-  
-      // Verificar se usuário está ativo
-      if (user.is_active) {
-        // O usuário já está ativo
-        return { success: false, 
-          statusCode: 400, 
-          error: REACTIVATE_ERROR 
-        };
-      }
+
       // Compara a senha digitada com a senha criptografada armazenada no banco de dados
       const isPasswordMatch = await comparePasswords(password, user.password);
       if (!isPasswordMatch) {

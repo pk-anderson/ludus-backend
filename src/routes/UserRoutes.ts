@@ -24,7 +24,7 @@ router.post('/signup', upload.single('file'), signupHandler);
 router.get('/all', validateToken, listHandler);
 
 // Rota para buscar a imagem de perfil do usuário
-router.get('/picture', validateToken, profilePicHandler);
+router.get('/picture/:id', validateToken, profilePicHandler);
 
 // Rota para buscar um usuário por id
 router.get('/:id', validateToken, findHandler);
