@@ -1,12 +1,12 @@
 export interface User {
-    id: number;
-    username: string;
-    email: string;
-    password: string;
-    avatar_url?: string;
-    bio?: string;
-    created_at?: Date;
-    updated_at?: Date;
-    deleted_at?: Date;
-    is_active?: boolean;
+    Id: number;
+    Username: string;
+    Email: string;
+    Password: string;
+    AvatarUrl?: string;
+    Bio?: string;
+    CreatedAt?: Date;
+    UpdatedAt?: Date;
+    DeletedAt?: Date;
+    IsActive?: boolean;
   }

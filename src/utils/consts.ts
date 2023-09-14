@@ -4,6 +4,7 @@ export const AUTHENTICATION_SUCCESSFUL = 'Autenticação bem-sucedida.';
 export const CREATE_USER_SUCCESS = 'Usuário criado com sucesso.'
 export const LOGOUT_SUCCESSFUL = 'Logout realizado com sucesso.';
 export const DELETE_USER_SUCCESS = 'Usuário deletado com sucesso.'
+export const UPDATE_USER_SUCCESS = 'Usuário atualizado com sucesso.'
 
 // Error messages
 export const INTERNAL_SERVER_ERROR = 'Erro interno do servidor.'
@@ -22,3 +23,5 @@ export const CREATE_ENTITY_ERROR = 'Erro ao cadastrar entidade'
 export const FIND_ENTITY_ERROR = 'Entidade não encontrada'
 export const LIST_ENTITY_ERROR = 'Erro ao listar todas as entidades'
 export const DELETE_ENTITY_ERROR = 'Erro ao deletar a entidade'
+export const UPDATE_ENTITY_ERROR = 'Erro ao atualizar a entidade'
+export const REACTIVATE_ERROR = 'Erro ao reativar usuário.'

@@ -1,4 +1,5 @@
 import express from 'express';
+import authRoutes from '../routes/AuthRoutes';
 import usersRoutes from '../routes/UserRoutes';
 import testRoutes from '../routes/TestRoutes';
 import communityRoutes from '../routes/CommunityRoutes'
@@ -12,6 +13,8 @@ export function init() {
     app.use(express.json());
     // Utilizar a rota de teste
     app.use('/', testRoutes);
+    // Utilizar as rotas relacionadas a autenticação
+    app.use('/auth', authRoutes);
     // Utilizar as rotas relacionadas aos usuários
     app.use('/users', usersRoutes);
     // Utilizar as rotas relacionadas às comunidades

@@ -2,28 +2,18 @@ import express from 'express';
 import { validateToken } from '../middlewares/AuthMiddleware'
 import {
     signupHandler,
-    loginHandler,
-    logoutHandler,
     listHandler,
     findHandler,
-    deleteHandler
+    deleteHandler,
+    updateHandler,
+    reactivateHandler,
+    updatePasswordHandler
 } from '../handlers/UserHandlers'
-import {     
-            updateUserById, 
-            reactivateUser,
-            updatePassword 
-        } from '../repositories/UserRepository';
 
 const router = express.Router();
 
 // Rota para cadastro de usuário
 router.post('/signup', signupHandler);
-
-// Rota para autenticação (login) de usuário
-router.post('/login', loginHandler);
-
-// Rota para logout de usuário
-router.delete('/logout', validateToken, logoutHandler);
 
 // Rota para listagem de usuários
 router.get('/all', validateToken, listHandler);
@@ -32,15 +22,15 @@ router.get('/all', validateToken, listHandler);
 router.get('/:id', validateToken, findHandler);
 
 // Rota para atualizar um usuário por id
-router.put('/update/:id', validateToken, updateUserById);
+router.put('/update', validateToken, updateHandler);
 
 // Rota para deletar um usuário por id
 router.delete('/delete', validateToken, deleteHandler);
 
 // Rota para reativar um usuário por id
-router.post('/reactivate', reactivateUser);
+router.post('/reactivate', reactivateHandler);
 
 // Rota para atualizar a senha do usuário
-router.put('/update-password', validateToken, updatePassword);
+router.put('/update-password', validateToken, updatePasswordHandler);
 
 export default router;
