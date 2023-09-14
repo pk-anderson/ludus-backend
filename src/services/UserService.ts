@@ -36,7 +36,7 @@ import {
   export async function signupService(user: User) {
     try {
       // Verifica se todos os campos obrigatórios foram enviados
-      if (!user.Username || !user.Email || !user.Password) {
+      if (!user.username || !user.email || !user.password) {
         return {
           success: false,
           error: MISSING_REQUIRED_FIELDS,
@@ -45,7 +45,7 @@ import {
       }
   
       // Verificar se a senha é válida
-      if (!isValidPassword(user.Password)) {
+      if (!isValidPassword(user.password)) {
         return {
           success: false,
           error: INVALID_PASSWORD,
@@ -54,7 +54,7 @@ import {
       }
   
       // Verificar se o email é válido
-      if (!isValidEmail(user.Email)) {
+      if (!isValidEmail(user.email)) {
         return {
           success: false,
           error: INVALID_EMAIL,
@@ -62,7 +62,7 @@ import {
         };
       }
   
-      const emailExists = await checkIfEmailExists(user.Email);
+      const emailExists = await checkIfEmailExists(user.email);
       if (emailExists) {
         return {
           success: false,
@@ -72,8 +72,8 @@ import {
       }
   
       // Criptografa a senha antes de salvar no banco de dados
-      const hashedPassword = await encryptPassword(user.Password);
-      user.Password = hashedPassword;
+      const hashedPassword = await encryptPassword(user.password);
+      user.password = hashedPassword;
   
       const response = await signup(user);
   
@@ -122,12 +122,12 @@ import {
           error: FIND_ENTITY_ERROR 
         };
       }
-  
+      console.log(userResult)
       // Mapear o resultado para a interface de resposta
-      const user: User = userResult.rows[0];
-  
+      const user: User = userResult;
+      console.log(user)
       // Verificar se usuário está ativo
-      if (!user.IsActive) {
+      if (!user.is_active) {
         // O usuário não está ativo
         return { success: false, 
           statusCode: 404, 
@@ -159,10 +159,10 @@ import {
       }
   
       // Mapear o resultado para a interface de resposta
-      const user: User = userResult.rows[0];
+      const user: User = userResult;
   
       // Verificar se usuário está ativo
-      if (!user.IsActive) {
+      if (!user.is_active) {
         // O usuário não está ativo
         return { success: false, 
           statusCode: 404, 
@@ -188,8 +188,7 @@ import {
 
   export async function updateService(user: User) {
     try {
-      const userResult = await getUserById(user.Id)
-      
+      const userResult = await getUserById(user.id)
       if (!userResult) {
         // Nenhum usuário encontrado com o ID fornecido
         return { success: false, 
@@ -197,26 +196,23 @@ import {
           error: FIND_ENTITY_ERROR 
         };
       }
-  
       // Mapear o resultado para a interface de resposta
-      const updatedUser: User = userResult.rows[0];
-  
+      const updatedUser: User = userResult;
       // Verificar se usuário está ativo
-      if (!user.IsActive) {
+      if (!updatedUser.is_active) {
         // O usuário não está ativo
         return { success: false, 
           statusCode: 404, 
           error: FIND_ENTITY_ERROR 
         };
       }
-
     // Verificar e modificar apenas os campos fornecidos no corpo da requisição
-    if (user.Username !== undefined) {
-      updatedUser.Username = user.Username;
+    if (user.username !== undefined) {
+      updatedUser.username = user.username;
     }
 
-    if (user.Email !== undefined) {
-      if (!isValidEmail(user.Email)) {
+    if (user.email !== undefined) {
+      if (!isValidEmail(user.email)) {
         return {
           success: false,
           error: INVALID_EMAIL,
@@ -224,7 +220,7 @@ import {
         };
       }
 
-      const emailExists = await checkIfEmailExists(user.Email);
+      const emailExists = await checkIfEmailExists(user.email);
       if (emailExists) {
         return {
           success: false,
@@ -233,19 +229,19 @@ import {
         };
       }
 
-      updatedUser.Email = user.Email;
+      updatedUser.email = user.email;
     }
 
-    if (user.AvatarUrl !== undefined) {
-      updatedUser.AvatarUrl = user.AvatarUrl;
+    if (user.profile_pic !== undefined) {
+      updatedUser.profile_pic = user.profile_pic;
     }
 
-    if (user.Bio !== undefined) {
-      updatedUser.Bio = user.Bio;
+    if (user.bio !== undefined) {
+      updatedUser.bio = user.bio;
     }
 
     // Incluir o campo 'updated_at' no objeto do usuário e adicionar a data atual como valor
-    updatedUser.UpdatedAt = new Date();
+    updatedUser.updated_at = new Date();
 
     await updateUserById(updatedUser)
   
@@ -276,10 +272,10 @@ import {
       }
   
       // Mapear o resultado para a interface de resposta
-      const user: User = userResult.rows[0];
+      const user: User = userResult;
   
       // Verificar se usuário está ativo
-      if (user.IsActive) {
+      if (user.is_active) {
         // O usuário já está ativo
         return { success: false, 
           statusCode: 400, 
@@ -287,7 +283,7 @@ import {
         };
       }
       // Compara a senha digitada com a senha criptografada armazenada no banco de dados
-      const isPasswordMatch = await comparePasswords(password, user.Password);
+      const isPasswordMatch = await comparePasswords(password, user.password);
       if (!isPasswordMatch) {
         return { success: false, 
           statusCode: 400, 
@@ -295,14 +291,14 @@ import {
         };
       }
 
-      await reactivateUser(user.Id); // Chama a função do repositório para reativar usuário
+      await reactivateUser(user.id); // Chama a função do repositório para reativar usuário
       // Autenticação bem-sucedida, gerar o token JWT
       const sessionId = generateSessionId();
       const tokenPayload = {
-        id: user.Id,
-        email: user.Email,
+        id: user.id,
+        email: user.email,
         sessionId: sessionId,
-        username: user.Username,
+        username: user.username,
         revoked: false
       };
 
@@ -318,7 +314,7 @@ import {
       });
 
       // Salvar o token na tabela tb_access
-      await createAccessToken(user.Id, token, sessionId);
+      await createAccessToken(user.id, token, sessionId);
 
       return { success: true, 
         statusCode: 200, 
@@ -351,7 +347,7 @@ import {
       const hashedPassword = await encryptPassword(password);
 
       // Atualizar a senha do usuário
-      await updatePassword(userId, password);
+      await updatePassword(userId, hashedPassword);
 
       return { success: true, 
         statusCode: 200, 

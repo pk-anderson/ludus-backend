@@ -21,8 +21,8 @@ export async function signup(user: User) {
   try {
     // Insere o novo usuário no banco de dados
     const insertUserQuery =
-      'INSERT INTO tb_users (username, email, password, avatar_url, bio) VALUES ($1, $2, $3, $4, $5) RETURNING *';
-    const insertUserValues = [user.Username, user.Email, user.Password, user.AvatarUrl, user.Bio];
+      'INSERT INTO tb_users (username, email, password, profile_pic, bio) VALUES ($1, $2, $3, $4, $5) RETURNING *';
+    const insertUserValues = [user.username, user.email, user.password, user.profile_pic, user.bio];
     const insertedUser = await pool.query(insertUserQuery, insertUserValues);
 
     return insertedUser
@@ -46,7 +46,7 @@ export async function getUserByEmail(email: string) {
 export async function listUsers() {
   try {
     // Consultar todos os usuários no banco de dados
-    const getUsersQuery = 'SELECT id, username, email, avatar_url, bio, created_at, updated_at, deleted_at, is_active FROM tb_users';
+    const getUsersQuery = 'SELECT id, username, email, profile_pic, bio, created_at, updated_at, deleted_at, is_active FROM tb_users';
     const usersResult = await pool.query(getUsersQuery);
 
     return usersResult.rows
@@ -61,7 +61,7 @@ export async function getUserById(userId: number) {
   try {
 
     // Consultar o usuário no banco de dados pelo ID
-    const getUserQuery = 'SELECT id, username, email, avatar_url, bio, created_at, updated_at, deleted_at, is_active FROM tb_users WHERE id = $1';
+    const getUserQuery = 'SELECT id, username, email, profile_pic, bio, created_at, updated_at, deleted_at, is_active FROM tb_users WHERE id = $1';
     const getUserValues = [userId];
     const userResult = await pool.query(getUserQuery, getUserValues);
 
@@ -90,16 +90,16 @@ export async function updateUserById(user: User) {
     // Montar a query SQL de atualização dos dados do usuário
     const updateQuery = `
       UPDATE tb_users 
-      SET username = $1, email = $2, avatar_url = $3, bio = $4, updated_at = $5
+      SET username = $1, email = $2, profile_pic = $3, bio = $4, updated_at = $5
       WHERE id = $6`;
 
     const updateValues = [
-      user.Username,
-      user.Email,
-      user.AvatarUrl,
-      user.Bio,
-      user.UpdatedAt,
-      user.Id,
+      user.username,
+      user.email,
+      user.profile_pic,
+      user.bio,
+      user.updated_at,
+      user.id,
     ];
 
     // Executar a query SQL para atualizar os dados do usuário no banco de dados

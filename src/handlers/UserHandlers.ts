@@ -82,7 +82,7 @@ export async function signupHandler(req: Request, res: Response) {
   export async function updateHandler(req: Request, res: Response) {
     try {
       const user: User = req.body
-      user.Id = req.decodedToken!.id
+      user.id = req.decodedToken!.id
 
       const result = await updateService(user);
   
