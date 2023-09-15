@@ -14,6 +14,11 @@ export const UPDATE_USER_SUCCESS = 'Usuário atualizado com sucesso.'
 export const FOLLOW_SUCCESS = 'Você agora segue este usuário.'
 export const UNFOLLOW_SUCCESS = 'Você agora deixou de seguir este usuário.'
 
+// community
+export const UPDATE_COMMUNITY_SUCCESS = 'Comunidade atualizada com sucesso.'
+export const DELETE_COMMUNITY_SUCCESS = 'Comunidade desativada com sucesso.'
+export const REACTIVATE_COMMUNITY_SUCCESS = 'Comunidade reativada com sucesso.'
+
 // ERROR 
 
 // Internal
@@ -46,4 +51,4 @@ export const FIND_ENTITY_ERROR = 'Entidade não encontrada'
 export const LIST_ENTITY_ERROR = 'Erro ao listar todas as entidades'
 export const DELETE_ENTITY_ERROR = 'Erro ao deletar a entidade'
 export const UPDATE_ENTITY_ERROR = 'Erro ao atualizar a entidade'
-export const REACTIVATE_ERROR = 'Erro ao reativar usuário.'
+export const REACTIVATE_ERROR = 'Erro ao reativar entidade.'
