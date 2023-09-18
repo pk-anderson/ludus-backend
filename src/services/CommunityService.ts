@@ -94,7 +94,7 @@ export async function createService(community: Community) {
           error: FIND_ENTITY_ERROR
         };
       }
-  
+
       return { success: true, 
         statusCode: 200, 
         data: data

@@ -1,4 +1,3 @@
-
 // SUCCESS
 
 // auth
@@ -19,7 +18,16 @@ export const UPDATE_COMMUNITY_SUCCESS = 'Comunidade atualizada com sucesso.'
 export const DELETE_COMMUNITY_SUCCESS = 'Comunidade desativada com sucesso.'
 export const REACTIVATE_COMMUNITY_SUCCESS = 'Comunidade reativada com sucesso.'
 
+// member
+export const FOLLOWING_COMMUNITY = 'Agora você está seguindo esta comunidade.'
+export const UNFOLLOWING_COMMUNITY = 'Agora você não é mais seguidor desta comunidade.'
+
 // ERROR 
+
+// member
+export const FOLLOW_OWN_COMMUNITY_ERROR = 'Você não pode seguir sua própria comunidade.'
+export const FOLLOWING_COMMUNITY_ERROR = 'Você já está seguindo esta comunidade.'
+export const NOT_FOLLOWING_COMMUNITY_ERROR = 'Você não é seguidor desta comunidade.'
 
 // Internal
 export const INTERNAL_SERVER_ERROR = 'Erro interno do servidor.'
