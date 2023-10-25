@@ -1,6 +1,8 @@
+import { Game } from './../interfaces/Game';
 import { getTwitchAccessTokenOrFetch } from "./TwitchService";
 import { 
-    listGames,
+    listGamesByFilter,
+    listAllGames,
     getGameById
  } from "../igdb/Games";
 import { 
@@ -8,11 +10,16 @@ import {
     FIND_ENTITY_ERROR
  } from "../utils/consts";
 
-export async function listGamesService(text: string) {
+export async function listGamesService(text: string, limit: number, page: number) {
     try {
         const twitchToken = await getTwitchAccessTokenOrFetch()
-        text = `"${text}"`
-        const data = await listGames(twitchToken.access_token, text)
+        let data: Game[] 
+        if (text === undefined) {
+            data = await listAllGames(twitchToken.access_token, limit, page)
+        } else {
+            text = `"${text}"`
+            data = await listGamesByFilter(twitchToken.access_token, text, limit, page)
+        }
 
         return { success: true, 
             statusCode: 200, 

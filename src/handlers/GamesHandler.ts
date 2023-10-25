@@ -9,8 +9,10 @@ import {
 
 export async function listHandler(req: Request, res: Response) {
     try {
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
       const text = req.query.text as string;
-      const result = await listGamesService(text);
+      const result = await listGamesService(text, limit, page);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.data);
