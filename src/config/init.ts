@@ -5,6 +5,7 @@ import testRoutes from '../routes/TestRoutes';
 import communityRoutes from '../routes/CommunityRoutes'
 import memberRoutes from '../routes/MemberRoutes'
 import followersRoutes from '../routes/FollowersRoutes'
+import gameRoutes from '../routes/GameRoutes'
 
 export function init() {
     const app = express();
@@ -23,6 +24,8 @@ export function init() {
     app.use('/members', memberRoutes);
     // Utilizar as rotas relacionadas aos seguidores
     app.use('/followers', followersRoutes);
+    // Utilizar as rotas relacionadas aos jogos
+    app.use('/games', gameRoutes);
 
     //return
     return app

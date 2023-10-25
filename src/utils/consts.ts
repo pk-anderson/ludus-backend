@@ -22,6 +22,9 @@ export const REACTIVATE_COMMUNITY_SUCCESS = 'Comunidade reativada com sucesso.'
 export const FOLLOWING_COMMUNITY = 'Agora você está seguindo esta comunidade.'
 export const UNFOLLOWING_COMMUNITY = 'Agora você não é mais seguidor desta comunidade.'
 
+// games
+
+
 // ERROR 
 
 // member

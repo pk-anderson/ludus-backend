@@ -34,4 +34,24 @@ export async function logout(sessionId: string) {
       throw new Error(`${error}`);
     }
   }
+
+export async function createTwitchToken(token: string, expiresIn: number, createdAt: Date) {
+  try {
+    const insertAccessTokenQuery = 'INSERT INTO tb_twitch_access (access_token, expires_in, created_at) VALUES ($1, $2, $3)'
+    const insertAccessTokenValues = [token, expiresIn, createdAt]
+    return await pool.query(insertAccessTokenQuery, insertAccessTokenValues);
+  } catch (error) {
+    throw new Error(`${error}`);
+  }
+}
+
+export async function getLatestTwitchToken() {
+  try {
+    const getLatestTokenQuery = 'SELECT * FROM tb_twitch_access ORDER BY created_at DESC LIMIT 1';
+    const result = await pool.query(getLatestTokenQuery);
+    return result.rows[0];
+  } catch (error) {
+    throw new Error(`${error}`);
+  }
+}
   
