@@ -1,6 +1,10 @@
 import { Game } from './../interfaces/Game';
 import { getTwitchAccessTokenOrFetch } from "./TwitchService";
 import { 
+    getCache,
+    saveCache 
+} from '../repositories/RedisRepository';
+import { 
     listGamesByFilter,
     listAllGames,
     getGameById
@@ -11,15 +15,27 @@ import {
  } from "../utils/consts";
 
 export async function listGamesService(text: string, limit: number, page: number) {
-    try {
-        const twitchToken = await getTwitchAccessTokenOrFetch()
-        let data: Game[] 
+    try { 
+        // Se houver filtro, verificar se busca está salva como cache
+        const cache = await getCache(`${text}-${limit}-${page}`)
+        if (cache) {
+            return { success: true, 
+                statusCode: 200,
+                data: JSON.parse(cache)
+            };
+        }
+        // Se não estiver, realizar nova busca
+        const twitchToken = await getTwitchAccessTokenOrFetch()   
+        let data: Game[]
         if (text === undefined) {
             data = await listAllGames(twitchToken.access_token, limit, page)
         } else {
-            text = `"${text}"`
-            data = await listGamesByFilter(twitchToken.access_token, text, limit, page)
+            const filter = `"${text}"`
+            data = await listGamesByFilter(twitchToken.access_token, filter, limit, page)
         }
+        
+        // Salvar nova busca como cache
+        await saveCache(`${text}-${limit}-${page}`, JSON.stringify(data))
 
         return { success: true, 
             statusCode: 200, 
@@ -35,9 +51,21 @@ export async function listGamesService(text: string, limit: number, page: number
 
 export async function findGameByIdService(id: number) {
     try {
-        const twitchToken = await getTwitchAccessTokenOrFetch()
+        // Verificar se busca está salva como cache
+        const cache = await getCache(id.toString())
+        if (cache) {
+            return { success: true, 
+                statusCode: 200, 
+                data: JSON.parse(cache)
+            };
+        }
 
+        // Se não estiver, realizar nova busca
+        const twitchToken = await getTwitchAccessTokenOrFetch()
         const data = await getGameById(twitchToken.access_token, id)
+
+        // Salvar nova busca em cache
+        await saveCache(id.toString(), JSON.stringify(data))
 
         return { success: true, 
             statusCode: 200, 
