@@ -62,7 +62,7 @@ export async function findGameByIdService(id: number) {
 
         // Se não estiver, realizar nova busca
         const twitchToken = await getTwitchAccessTokenOrFetch()
-        const data = await getGameById(twitchToken.access_token, id)
+        const data: Game = await getGameById(twitchToken.access_token, id)
 
         // Salvar nova busca em cache
         await saveCache(id.toString(), JSON.stringify(data))

@@ -1,4 +1,3 @@
-import { Request, Response } from 'express';
 import { pool } from '../index'; 
 
 export async function checkIfMemberExists(userId: number, communityId: number) {

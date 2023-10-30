@@ -1,5 +1,4 @@
 import { Community } from './../interfaces/Community';
-import { Request, Response } from 'express';
 import { pool } from '../index'; 
 
 export async function createCommunity(community: Community) {
