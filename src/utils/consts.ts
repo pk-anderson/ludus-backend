@@ -25,6 +25,10 @@ export const UNFOLLOWING_COMMUNITY = 'Agora você não é mais seguidor desta co
 // rating
 export const DELETE_RATING_SUCCESS = 'Avaliação removida com sucesso.'
 
+// comment
+export const NO_CONTENT_ERROR = 'O comentário está vazio.'
+export const DELETE_COMMENT_SUCCESS = 'Comentário removido com sucesso.'
+
 // ERROR 
 
 // member

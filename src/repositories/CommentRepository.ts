@@ -48,28 +48,6 @@ export async function updateComment(commentId: number, content: string) {
     }
 }
 
-// Buscar comentário
-export async function getComment(userId: number, gameId: number) {
-    try {
-        const getCommentsQuery = `
-            SELECT c.*, 
-                   COALESCE(l.like_count, 0) AS like_count, 
-                   COALESCE(d.dislike_count, 0) AS dislike_count 
-            FROM tb_comments c
-            LEFT JOIN (
-                SELECT comment_id, COUNT(*) AS like_count FROM tb_comment_likes GROUP BY comment_id
-            ) l ON c.id = l.comment_id
-            LEFT JOIN (
-                SELECT comment_id, COUNT(*) AS dislike_count FROM tb_comment_dislikes GROUP BY comment_id
-            ) d ON c.id = d.comment_id
-            WHERE c.user_id = $1 AND c.game_id = $2`;
-        const result = await pool.query(getCommentsQuery, [userId, gameId]);
-        return result.rows;
-    } catch (error) {
-        throw new Error(`${error}`);
-    }
-}
-
 // Buscar comentário por id
 export async function getCommentById(commentId: number) {
     try {
@@ -84,14 +62,13 @@ export async function getCommentById(commentId: number) {
             LEFT JOIN (
                 SELECT comment_id, COUNT(*) AS dislike_count FROM tb_comment_dislikes GROUP BY comment_id
             ) d ON c.id = d.comment_id
-            WHERE c.id = $1`;
+            WHERE c.id = $1 and c.deleted_at is NULL`;
         const result = await pool.query(getCommentQuery, [commentId]);
         return result.rows[0];
     } catch (error) {
         throw new Error(`${error}`);
     }
 }
-
 
 // Listar todos os comentários de um usuário
 export async function listCommentsByUserId(userId: number, orderBy: CommentOrderBy = CommentOrderBy.RECENT) {
@@ -109,7 +86,7 @@ export async function listCommentsByUserId(userId: number, orderBy: CommentOrder
             LEFT JOIN (
                 SELECT comment_id, COUNT(*) AS dislike_count FROM tb_comment_dislikes GROUP BY comment_id
             ) d ON c.id = d.comment_id
-            WHERE c.user_id = $1
+            WHERE c.user_id = $1 and c.deleted_at is NULL
             ${orderByClause}`;
 
         const result = await pool.query(getCommentsQuery, [userId]);
@@ -135,40 +112,10 @@ export async function listCommentsByGameId(gameId: number, orderBy: CommentOrder
             LEFT JOIN (
                 SELECT comment_id, COUNT(*) AS dislike_count FROM tb_comment_dislikes GROUP BY comment_id
             ) d ON c.id = d.comment_id
-            WHERE c.game_id = $1
+            WHERE c.game_id = $1 and c.deleted_at is NULL
             ${orderByClause}`;
 
         const result = await pool.query(getCommentsQuery, [gameId]);
-        return result.rows;
-    } catch (error) {
-        throw new Error(`${error}`);
-    }
-}
-
-// Buscar dados de todos os usuários que deram like em um comentário
-export async function getUsersWhoLikedComment(commentId: number) {
-    try {
-        const getUsersQuery = `
-            SELECT u.id, u.username, u.email, u.profile_pic
-            FROM tb_users u
-            JOIN tb_comment_likes l ON u.id = l.user_id
-            WHERE l.comment_id = $1 AND u.is_active = true`;
-        const result = await pool.query(getUsersQuery, [commentId]);
-        return result.rows;
-    } catch (error) {
-        throw new Error(`${error}`);
-    }
-}
-
-// Buscar dados de todos os usuários que deram dislike em um comentário
-export async function getUsersWhoDislikedComment(commentId: number) {
-    try {
-        const getUsersQuery = `
-            SELECT u.id, u.username, u.email, u.profile_pic
-            FROM tb_users u
-            JOIN tb_comment_dislikes d ON u.id = d.user_id
-            WHERE d.comment_id = $1 AND u.is_active = true`;
-        const result = await pool.query(getUsersQuery, [commentId]);
         return result.rows;
     } catch (error) {
         throw new Error(`${error}`);

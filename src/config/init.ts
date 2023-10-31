@@ -7,6 +7,7 @@ import memberRoutes from '../routes/MemberRoutes'
 import followersRoutes from '../routes/FollowersRoutes'
 import gameRoutes from '../routes/GameRoutes'
 import ratingRoutes from '../routes/RatingRoutes'
+import commentRoutes from '../routes/CommentRoutes'
 
 export function init() {
     const app = express();
@@ -29,6 +30,8 @@ export function init() {
     app.use('/games', gameRoutes);
     // Utilizar as rotas relacionadas às avaliações
     app.use('/ratings', ratingRoutes);
+    // Utilizar as rotas relacionadas aos comentários
+    app.use('/comments', commentRoutes);
 
     //return
     return app

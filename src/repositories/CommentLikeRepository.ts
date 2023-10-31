@@ -48,6 +48,36 @@ export async function removeLike(user_id: number, comment_id: number) {
     }
 }
 
+// Buscar dados de todos os usuários que deram like em um comentário
+export async function getUsersWhoLikedComment(commentId: number) {
+    try {
+        const getUsersQuery = `
+            SELECT u.id, u.username, u.email, u.profile_pic
+            FROM tb_users u
+            JOIN tb_comment_likes l ON u.id = l.user_id
+            WHERE l.comment_id = $1 AND u.is_active = true`;
+        const result = await pool.query(getUsersQuery, [commentId]);
+        return result.rows;
+    } catch (error) {
+        throw new Error(`${error}`);
+    }
+}
+
+// Buscar dados de todos os usuários que deram dislike em um comentário
+export async function getUsersWhoDislikedComment(commentId: number) {
+    try {
+        const getUsersQuery = `
+            SELECT u.id, u.username, u.email, u.profile_pic
+            FROM tb_users u
+            JOIN tb_comment_dislikes d ON u.id = d.user_id
+            WHERE d.comment_id = $1 AND u.is_active = true`;
+        const result = await pool.query(getUsersQuery, [commentId]);
+        return result.rows;
+    } catch (error) {
+        throw new Error(`${error}`);
+    }
+}
+
 // Remover dislike
 export async function removeDislike(user_id: number, comment_id: number) {
     try {
