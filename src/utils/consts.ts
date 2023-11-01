@@ -28,6 +28,10 @@ export const DELETE_RATING_SUCCESS = 'Avaliação removida com sucesso.'
 // comment
 export const NO_CONTENT_ERROR = 'O comentário está vazio.'
 export const DELETE_COMMENT_SUCCESS = 'Comentário removido com sucesso.'
+export const COMMENT_LIKE_SUCCESS = 'Você deu like em um comentário.'
+export const COMMENT_REMOVELIKE_SUCCESS = 'Você removeu o like de um comentário.'
+export const COMMENT_DISLIKE_SUCCESS = 'Você deu dislike em um comentário.'
+export const COMMENT_REMOVEDISLIKE_SUCCESS = 'Você removeu o dislike de um comentário.'
 
 // ERROR 
 

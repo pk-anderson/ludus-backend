@@ -5,7 +5,11 @@ import {
     updateHandler,
     deleteHandler,
     listByUserHandler,
-    listByGameHandler
+    listByGameHandler,
+    likeCommentHandler,
+    dislikeCommentHandler,
+    listWhoLikedHandler,
+    listWhoDislikedHandler
 } from '../handlers/CommentHandlers'
 
 const router = express.Router();
@@ -24,5 +28,17 @@ router.get('/game/:gameId', validateToken, listByGameHandler);
 
 // Rota para listar comentários por usuário
 router.get('/user/:userId', validateToken, listByUserHandler);
+
+// Rota para dar ou remover like 
+router.post('/:commentId/like', validateToken, likeCommentHandler);
+
+// Rota para dar ou remover dislike 
+router.post('/:commentId/dislike', validateToken, dislikeCommentHandler);
+
+// Rota para listar usuários que deram like a um comentário
+router.get('/:commentId/liked-by', validateToken, listWhoLikedHandler);
+
+// Rota para listar usuários que deram dislike a um comentário
+router.get('/:commentId/disliked-by', validateToken, listWhoDislikedHandler);
 
 export default router;

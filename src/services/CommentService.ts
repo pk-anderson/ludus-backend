@@ -33,7 +33,7 @@ export async function createService(comment: Comment) {
   
       return { success: true, 
         statusCode: 200, 
-        data: data
+        data
       };
     } catch (error) {
       return { success: false, 
@@ -72,7 +72,7 @@ export async function createService(comment: Comment) {
     const data: Comment = await updateComment(commentId, content)
       return { success: true, 
         statusCode: 200, 
-        data: data
+        data
       };
     } catch (error) {
       return { success: false, 
@@ -88,7 +88,7 @@ export async function createService(comment: Comment) {
   
       return { success: true, 
         statusCode: 200, 
-        data: data
+        data
       };
     } catch (error) {
       return { success: false, 
@@ -104,7 +104,7 @@ export async function createService(comment: Comment) {
   
       return { success: true, 
         statusCode: 200, 
-        data: data
+        data
       };
     } catch (error) {
       return { success: false, 

@@ -11,6 +11,12 @@ import {
     listByGameService,
     deleteService
 } from '../services/CommentService'
+import { 
+  likeService,
+  dislikeService,
+  listWhoLikedService,
+  listWhoDislikedService
+ } from '../services/CommentLikeService';
 
 export async function createHandler(req: Request, res: Response) {
     try {
@@ -65,7 +71,7 @@ export async function createHandler(req: Request, res: Response) {
   export async function listByUserHandler(req: Request, res: Response) {
     try {
       const userId = parseInt(req.params.userId, 10);
-      const orderBy = parseInt(req.query.order as string, 10) || 1;
+      const orderBy: CommentOrderBy = parseInt(req.query.order as string, 10) || 1;
       const result = await listByUserService(userId, orderBy);
   
       if (result.success) {
@@ -82,7 +88,7 @@ export async function createHandler(req: Request, res: Response) {
   export async function listByGameHandler(req: Request, res: Response) {
     try {
       const gameId = parseInt(req.params.gameId, 10);
-      const orderBy = parseInt(req.query.order as string, 10) || 1;
+      const orderBy: CommentOrderBy = parseInt(req.query.order as string, 10) || 1;
       const result = await listByGameService(gameId, orderBy);
   
       if (result.success) {
@@ -95,4 +101,69 @@ export async function createHandler(req: Request, res: Response) {
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
+
+  export async function likeCommentHandler(req: Request, res: Response) {
+    try {
+      const commentId = parseInt(req.params.commentId, 10);
+      const result = await likeService(req.decodedToken!.id, commentId);
+  
+      if (result.success) {
+        res.status(result.statusCode || 200).json(result.message);
+      } else {
+        res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
+      }
+    } catch (error) {
+      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      res.status(500).json({ message: INTERNAL_SERVER_ERROR });
+    }
+  }
+
+  export async function dislikeCommentHandler(req: Request, res: Response) {
+    try {
+      const commentId = parseInt(req.params.commentId, 10);
+      const result = await dislikeService(req.decodedToken!.id, commentId);
+  
+      if (result.success) {
+        res.status(result.statusCode || 200).json(result.message);
+      } else {
+        res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
+      }
+    } catch (error) {
+      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      res.status(500).json({ message: INTERNAL_SERVER_ERROR });
+    }
+  }
+
+  export async function listWhoLikedHandler(req: Request, res: Response) {
+    try {
+      const commentId = parseInt(req.params.commentId, 10);
+      const result = await listWhoLikedService(commentId);
+  
+      if (result.success) {
+        res.status(result.statusCode || 200).json(result.data);
+      } else {
+        res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
+      }
+    } catch (error) {
+      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      res.status(500).json({ message: INTERNAL_SERVER_ERROR });
+    }
+  }
+
+  export async function listWhoDislikedHandler(req: Request, res: Response) {
+    try {
+      const commentId = parseInt(req.params.commentId, 10);
+      const result = await listWhoDislikedService(commentId);
+  
+      if (result.success) {
+        res.status(result.statusCode || 200).json(result.data);
+      } else {
+        res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
+      }
+    } catch (error) {
+      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      res.status(500).json({ message: INTERNAL_SERVER_ERROR });
+    }
+  }
+
 
