@@ -8,6 +8,7 @@ import followersRoutes from '../routes/FollowersRoutes'
 import gameRoutes from '../routes/GameRoutes'
 import ratingRoutes from '../routes/RatingRoutes'
 import commentRoutes from '../routes/CommentRoutes'
+import communityPostRoutes from '../routes/CommunityPostRoutes'
 
 export function init() {
     const app = express();
@@ -32,6 +33,8 @@ export function init() {
     app.use('/ratings', ratingRoutes);
     // Utilizar as rotas relacionadas aos comentários
     app.use('/comments', commentRoutes);
+    // Utilizar as rotas relacionadas às postagens de comunidades
+    app.use('/posts', communityPostRoutes);
 
     //return
     return app

@@ -33,6 +33,9 @@ export const COMMENT_REMOVELIKE_SUCCESS = 'Você removeu o like de um comentári
 export const COMMENT_DISLIKE_SUCCESS = 'Você deu dislike em um comentário.'
 export const COMMENT_REMOVEDISLIKE_SUCCESS = 'Você removeu o dislike de um comentário.'
 
+// post
+export const DELETE_POST_SUCCESS = 'Postagem removida com sucesso.'
+
 // ERROR 
 
 // member
