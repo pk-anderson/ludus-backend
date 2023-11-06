@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
-import { 
-    Comment,
-    CommentOrderBy
- } from '../interfaces/Comment';
+import { Comment } from '../interfaces/Comment';
+import { ListOrderBy } from './../utils/listOrder';
 import { INTERNAL_SERVER_ERROR } from './../utils/consts'
 import {
     createService,
@@ -16,7 +14,8 @@ import {
   dislikeService,
   listWhoLikedService,
   listWhoDislikedService
- } from '../services/CommentLikeService';
+ } from '../services/LikeDislikeService';
+import { EntityType } from '../interfaces/LikesDislikes';
 
 export async function createHandler(req: Request, res: Response) {
     try {
@@ -71,7 +70,7 @@ export async function createHandler(req: Request, res: Response) {
   export async function listByUserHandler(req: Request, res: Response) {
     try {
       const userId = parseInt(req.params.userId, 10);
-      const orderBy: CommentOrderBy = parseInt(req.query.order as string, 10) || 1;
+      const orderBy: ListOrderBy = parseInt(req.query.order as string, 10) || 1;
       const result = await listByUserService(userId, orderBy);
   
       if (result.success) {
@@ -88,7 +87,7 @@ export async function createHandler(req: Request, res: Response) {
   export async function listByGameHandler(req: Request, res: Response) {
     try {
       const gameId = parseInt(req.params.gameId, 10);
-      const orderBy: CommentOrderBy = parseInt(req.query.order as string, 10) || 1;
+      const orderBy: ListOrderBy = parseInt(req.query.order as string, 10) || 1;
       const result = await listByGameService(gameId, orderBy);
   
       if (result.success) {
@@ -105,7 +104,7 @@ export async function createHandler(req: Request, res: Response) {
   export async function likeCommentHandler(req: Request, res: Response) {
     try {
       const commentId = parseInt(req.params.commentId, 10);
-      const result = await likeService(req.decodedToken!.id, commentId);
+      const result = await likeService(req.decodedToken!.id, commentId, EntityType.COMMENT);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.message);
@@ -121,7 +120,7 @@ export async function createHandler(req: Request, res: Response) {
   export async function dislikeCommentHandler(req: Request, res: Response) {
     try {
       const commentId = parseInt(req.params.commentId, 10);
-      const result = await dislikeService(req.decodedToken!.id, commentId);
+      const result = await dislikeService(req.decodedToken!.id, commentId, EntityType.COMMENT);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.message);
@@ -137,7 +136,7 @@ export async function createHandler(req: Request, res: Response) {
   export async function listWhoLikedHandler(req: Request, res: Response) {
     try {
       const commentId = parseInt(req.params.commentId, 10);
-      const result = await listWhoLikedService(commentId);
+      const result = await listWhoLikedService(commentId, EntityType.COMMENT);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.data);
@@ -153,7 +152,7 @@ export async function createHandler(req: Request, res: Response) {
   export async function listWhoDislikedHandler(req: Request, res: Response) {
     try {
       const commentId = parseInt(req.params.commentId, 10);
-      const result = await listWhoDislikedService(commentId);
+      const result = await listWhoDislikedService(commentId, EntityType.COMMENT);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.data);

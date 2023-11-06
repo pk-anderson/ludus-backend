@@ -9,10 +9,3 @@ export interface Comment {
     updated_at?: Date;
     deleted_at?: Date;
 }
-
-export enum CommentOrderBy {
-    RECENT = 1,
-    OLDEST = 2,
-    MOST_LIKED = 3,
-    MOST_DISLIKED = 4,
-  }

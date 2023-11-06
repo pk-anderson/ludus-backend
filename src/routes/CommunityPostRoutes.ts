@@ -7,6 +7,10 @@ import {
     listByCommunityHandler,
     updateHandler,
     deleteHandler,
+    likePostHandler,
+    dislikePostHandler,
+    listWhoLikedHandler,
+    listWhoDislikedHandler
 } from '../handlers/CommunityPostHandlers'
 
 const router = express.Router();
@@ -24,10 +28,22 @@ router.get('/:id', validateToken, getByIdHandler);
 router.get('/user/:userId', validateToken, listByUserHandler);
 
 // Rota para listar postagens por comunidade
-router.get('/user/:userId', validateToken, listByCommunityHandler);
+router.get('/community/:communityId', validateToken, listByCommunityHandler);
 
 // Rota para deletar postagem
 router.delete('/:id', validateToken, deleteHandler);
+
+// Rota para dar ou remover like 
+router.post('/:postId/like', validateToken, likePostHandler);
+
+// Rota para dar ou remover dislike 
+router.post('/:postId/dislike', validateToken, dislikePostHandler);
+
+// Rota para listar usuários que deram like a um comentário
+router.get('/:postId/liked-by', validateToken, listWhoLikedHandler);
+
+// Rota para listar usuários que deram dislike a um comentário
+router.get('/:postId/disliked-by', validateToken, listWhoDislikedHandler);
 
 export default router;
 

@@ -1,7 +1,5 @@
-import { 
-    Comment,
-    CommentOrderBy 
-} from "../interfaces/Comment";
+import { Comment } from "../interfaces/Comment";
+import { ListOrderBy } from './../utils/listOrder';
 import { 
     postComment,
     updateComment,
@@ -82,7 +80,7 @@ export async function createService(comment: Comment) {
     }
   }
 
-  export async function listByUserService(userId: number, orderBy: CommentOrderBy) {
+  export async function listByUserService(userId: number, orderBy: ListOrderBy) {
     try {
       const data: Comment[] = await listCommentsByUserId(userId, orderBy)
   
@@ -98,7 +96,7 @@ export async function createService(comment: Comment) {
     }
   }
 
-  export async function listByGameService(gameId: number, orderBy: CommentOrderBy) {
+  export async function listByGameService(gameId: number, orderBy: ListOrderBy) {
     try {
       const data: Comment[] = await listCommentsByGameId(gameId, orderBy)
   

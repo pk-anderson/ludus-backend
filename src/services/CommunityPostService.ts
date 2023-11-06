@@ -1,3 +1,4 @@
+import { ListOrderBy } from './../utils/listOrder';
 import { 
     CommunityPost,
     CommunityPostResponse,
@@ -10,6 +11,7 @@ import {
     listCommunityPostsByCommunityId,
     deleteCommunityPost
 } from "../repositories/CommunityPostRepository";
+import { checkIfMemberExists } from '../repositories/MembersRepository';
 import {
     CREATE_ENTITY_ERROR,
     FIND_ENTITY_ERROR,
@@ -18,12 +20,22 @@ import {
     UNAUTHORIZED_ACCESS,
     DELETE_ENTITY_ERROR,
     NO_CONTENT_ERROR,
-    DELETE_POST_SUCCESS
+    DELETE_POST_SUCCESS,
+    NOT_MEMBER_ERROR
 } from "../utils/consts";
-import { CommentOrderBy } from "../interfaces/Comment";
 
 export async function createCommunityPostService(post: CommunityPost) {
     try {
+        // verificar se usuário é membro da comunidade
+        const isMember = await checkIfMemberExists(post.user_id, post.community_id)
+        if (!isMember) {
+            return {
+                success: false,
+                statusCode: 403,
+                error: NOT_MEMBER_ERROR,
+            };
+        }
+
         if (!post.content || post.content === '') {
             return {
                 success: false,
@@ -51,7 +63,7 @@ export async function updateCommunityPostService(post: CommunityPost) {
     try {
         const checkPost = await getCommunityPostById(post.id);
 
-        if (!post) {
+        if (!checkPost) {
             return {
                 success: false,
                 statusCode: 404,
@@ -59,7 +71,7 @@ export async function updateCommunityPostService(post: CommunityPost) {
             };
         }
 
-        if (post.user_id !== post.user_id) {
+        if (post.user_id !== checkPost.user_id) {
             return {
                 success: false,
                 statusCode: 403,
@@ -91,7 +103,7 @@ export async function updateCommunityPostService(post: CommunityPost) {
     }
 }
 
-export async function listCommunityPostsByUser(userId: number, orderBy: CommentOrderBy) {
+export async function listCommunityPostsByUser(userId: number, orderBy: ListOrderBy) {
     try {
         const result = await listCommunityPostsByUserId(userId, orderBy);
 
@@ -151,7 +163,7 @@ export async function getCommunityPostByIdService(postId: number): Promise<any> 
     }
 }
 
-export async function listCommunityPostsByCommunity(communityId: number, orderBy: CommentOrderBy) {
+export async function listCommunityPostsByCommunity(communityId: number, orderBy: ListOrderBy) {
     try {
         const result = await listCommunityPostsByCommunityId(communityId, orderBy);
 

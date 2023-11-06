@@ -1,9 +1,6 @@
 import { pool } from '../index'; 
-import { 
-    Comment,
-    CommentOrderBy
- } from '../interfaces/Comment';
- import getOrderClause from '../utils/listOrder';
+import { Comment } from '../interfaces/Comment';
+import { ListOrderBy, getCommentOrderClause } from './../utils/listOrder';
  
 //Função para inserir comentário na tabela tb_comments
 export async function postComment(comment: Comment) {
@@ -34,7 +31,7 @@ export async function updateComment(commentId: number, content: string) {
     }
 }
 
-// Buscar comentário por id
+// Obter um comentário específico pelo ID, considerando likes e dislikes
 export async function getCommentById(commentId: number) {
     try {
         const getCommentQuery = `
@@ -43,12 +40,19 @@ export async function getCommentById(commentId: number) {
                    COALESCE(d.dislike_count, 0) AS dislike_count 
             FROM tb_comments c
             LEFT JOIN (
-                SELECT comment_id, COUNT(*) AS like_count FROM tb_comment_likes GROUP BY comment_id
-            ) l ON c.id = l.comment_id
+                SELECT entity_id, COUNT(*) AS like_count 
+                FROM tb_likes_dislikes 
+                WHERE entity_type = 'comment' AND is_like = true 
+                GROUP BY entity_id
+            ) l ON c.id = l.entity_id
             LEFT JOIN (
-                SELECT comment_id, COUNT(*) AS dislike_count FROM tb_comment_dislikes GROUP BY comment_id
-            ) d ON c.id = d.comment_id
-            WHERE c.id = $1 and c.deleted_at is NULL`;
+                SELECT entity_id, COUNT(*) AS dislike_count 
+                FROM tb_likes_dislikes 
+                WHERE entity_type = 'comment' AND is_like = false 
+                GROUP BY entity_id
+            ) d ON c.id = d.entity_id
+            WHERE c.id = $1 AND c.deleted_at IS NULL`;
+
         const result = await pool.query(getCommentQuery, [commentId]);
         return result.rows[0];
     } catch (error) {
@@ -56,10 +60,10 @@ export async function getCommentById(commentId: number) {
     }
 }
 
-// Listar todos os comentários de um usuário
-export async function listCommentsByUserId(userId: number, orderBy: CommentOrderBy = CommentOrderBy.RECENT) {
+// Listar todos os comentários de um usuário, considerando likes e dislikes
+export async function listCommentsByUserId(userId: number, orderBy: ListOrderBy = ListOrderBy.RECENT) {
     try {
-        const orderByClause = getOrderClause(orderBy);
+        const orderByClause = getCommentOrderClause(orderBy);
 
         const getCommentsQuery = `
             SELECT c.*, 
@@ -67,12 +71,18 @@ export async function listCommentsByUserId(userId: number, orderBy: CommentOrder
                    COALESCE(d.dislike_count, 0) AS dislike_count 
             FROM tb_comments c
             LEFT JOIN (
-                SELECT comment_id, COUNT(*) AS like_count FROM tb_comment_likes GROUP BY comment_id
-            ) l ON c.id = l.comment_id
+                SELECT entity_id, COUNT(*) AS like_count 
+                FROM tb_likes_dislikes 
+                WHERE entity_type = 'comment' AND is_like = true 
+                GROUP BY entity_id
+            ) l ON c.id = l.entity_id
             LEFT JOIN (
-                SELECT comment_id, COUNT(*) AS dislike_count FROM tb_comment_dislikes GROUP BY comment_id
-            ) d ON c.id = d.comment_id
-            WHERE c.user_id = $1 and c.deleted_at is NULL
+                SELECT entity_id, COUNT(*) AS dislike_count 
+                FROM tb_likes_dislikes 
+                WHERE entity_type = 'comment' AND is_like = false 
+                GROUP BY entity_id
+            ) d ON c.id = d.entity_id
+            WHERE c.user_id = $1 AND c.deleted_at IS NULL
             ${orderByClause}`;
 
         const result = await pool.query(getCommentsQuery, [userId]);
@@ -82,10 +92,10 @@ export async function listCommentsByUserId(userId: number, orderBy: CommentOrder
     }
 }
 
-// Listar todos os comentários para um jogo
-export async function listCommentsByGameId(gameId: number, orderBy: CommentOrderBy) {
+// Listar todos os comentários para um jogo, considerando likes e dislikes
+export async function listCommentsByGameId(gameId: number, orderBy: ListOrderBy) {
     try {
-        const orderByClause = getOrderClause(orderBy);
+        const orderByClause = getCommentOrderClause(orderBy);
 
         const getCommentsQuery = `
             SELECT c.*, 
@@ -93,12 +103,18 @@ export async function listCommentsByGameId(gameId: number, orderBy: CommentOrder
                    COALESCE(d.dislike_count, 0) AS dislike_count 
             FROM tb_comments c
             LEFT JOIN (
-                SELECT comment_id, COUNT(*) AS like_count FROM tb_comment_likes GROUP BY comment_id
-            ) l ON c.id = l.comment_id
+                SELECT entity_id, COUNT(*) AS like_count 
+                FROM tb_likes_dislikes 
+                WHERE entity_type = 'comment' AND is_like = true 
+                GROUP BY entity_id
+            ) l ON c.id = l.entity_id
             LEFT JOIN (
-                SELECT comment_id, COUNT(*) AS dislike_count FROM tb_comment_dislikes GROUP BY comment_id
-            ) d ON c.id = d.comment_id
-            WHERE c.game_id = $1 and c.deleted_at is NULL
+                SELECT entity_id, COUNT(*) AS dislike_count 
+                FROM tb_likes_dislikes 
+                WHERE entity_type = 'comment' AND is_like = false 
+                GROUP BY entity_id
+            ) d ON c.id = d.entity_id
+            WHERE c.game_id = $1 AND c.deleted_at IS NULL
             ${orderByClause}`;
 
         const result = await pool.query(getCommentsQuery, [gameId]);

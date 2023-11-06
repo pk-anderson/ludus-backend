@@ -28,12 +28,14 @@ export const DELETE_RATING_SUCCESS = 'Avaliação removida com sucesso.'
 // comment
 export const NO_CONTENT_ERROR = 'O comentário está vazio.'
 export const DELETE_COMMENT_SUCCESS = 'Comentário removido com sucesso.'
-export const COMMENT_LIKE_SUCCESS = 'Você deu like em um comentário.'
-export const COMMENT_REMOVELIKE_SUCCESS = 'Você removeu o like de um comentário.'
-export const COMMENT_DISLIKE_SUCCESS = 'Você deu dislike em um comentário.'
-export const COMMENT_REMOVEDISLIKE_SUCCESS = 'Você removeu o dislike de um comentário.'
+export const LIKE_SUCCESS = 'Like atribuído com sucesso.'
+export const REMOVELIKE_SUCCESS = 'Like removido com sucesso.'
+export const DISLIKE_SUCCESS = 'Dislike atribuído com sucesso.'
+export const REMOVEDISLIKE_SUCCESS = 'Dislike removido com sucesso.'
+export const INVALID_ENTITY = 'Tipo de entidade enviado é inválido.'
 
 // post
+export const NOT_MEMBER_ERROR = 'Usuário deve ser membro da comunidade para fazer um post.'
 export const DELETE_POST_SUCCESS = 'Postagem removida com sucesso.'
 
 // ERROR 
