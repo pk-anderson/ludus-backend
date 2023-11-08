@@ -9,7 +9,9 @@ import {
     likeCommentHandler,
     dislikeCommentHandler,
     listWhoLikedHandler,
-    listWhoDislikedHandler
+    listWhoDislikedHandler,
+    createReplyHandler,
+    listRepliesHandler
 } from '../handlers/CommentHandlers'
 
 const router = express.Router();
@@ -40,5 +42,11 @@ router.get('/:commentId/liked-by', validateToken, listWhoLikedHandler);
 
 // Rota para listar usuários que deram dislike a um comentário
 router.get('/:commentId/disliked-by', validateToken, listWhoDislikedHandler);
+
+// Rota para publicar comentário resposta
+router.post('/:commentId/reply', validateToken, createReplyHandler);
+
+// Rota para listar todas as respostas de um comentário
+router.get('/:commentId/replies', validateToken, listRepliesHandler);
 
 export default router;

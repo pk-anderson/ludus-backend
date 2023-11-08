@@ -7,7 +7,9 @@ import {
     updateService,
     listByUserService,
     listByEntityService,
-    deleteService
+    deleteService,
+    postReplyService,
+    listRepliesService
 } from '../services/CommentService'
 import { 
   likeService,
@@ -167,4 +169,37 @@ export async function updateHandler(req: Request, res: Response) {
     }
   }
 
+  export async function createReplyHandler(req: Request, res: Response) {
+    try {
+        const comment: Comment = req.body;
+        comment.user_id = req.decodedToken!.id;
+        const commentType: CommentType = req.body.comment_type;
+        const originalComment = parseInt(req.params.commentId, 10);
+        const result = await postReplyService(comment, originalComment);
+  
+        if (result.success) {
+            res.status(result.statusCode || 200).json(result.data);
+        } else {
+            res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
+        }
+    } catch (error) {
+        res.status(500).json({ message: INTERNAL_SERVER_ERROR });
+    }
+  }
+
+  export async function listRepliesHandler(req: Request, res: Response) {
+    try {
+        const originalComment = parseInt(req.params.commentId, 10);
+        const orderBy: ListOrderBy = parseInt(req.query.order as string, 10) || 1;
+        const result = await listRepliesService(originalComment, orderBy);
+  
+        if (result.success) {
+            res.status(result.statusCode || 200).json(result.data);
+        } else {
+            res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
+        }
+    } catch (error) {
+        res.status(500).json({ message: INTERNAL_SERVER_ERROR });
+    }
+  }
 

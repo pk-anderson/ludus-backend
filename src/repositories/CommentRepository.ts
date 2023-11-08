@@ -36,10 +36,11 @@ export async function updateComment(commentId: number, content: string) {
 export async function getCommentById(commentId: number) {
     try {
         const getCommentQuery = `
-            SELECT c.*, 
+            SELECT c.*, u.username, u.email,
                    COALESCE(l.like_count, 0) AS like_count, 
                    COALESCE(d.dislike_count, 0) AS dislike_count 
             FROM tb_comments c
+            INNER JOIN tb_users u ON c.user_id = u.id
             LEFT JOIN (
                 SELECT entity_id, COUNT(*) AS like_count 
                 FROM tb_likes_dislikes 
@@ -67,10 +68,11 @@ export async function listCommentsByUserId(userId: number, entityType: CommentTy
         const orderByClause = getCommentOrderClause(orderBy);
 
         const getCommentsQuery = `
-            SELECT c.*, 
+            SELECT c.*, u.username, u.email,
                    COALESCE(l.like_count, 0) AS like_count, 
                    COALESCE(d.dislike_count, 0) AS dislike_count 
             FROM tb_comments c
+            INNER JOIN tb_users u ON c.user_id = u.id
             LEFT JOIN (
                 SELECT entity_id, COUNT(*) AS like_count 
                 FROM tb_likes_dislikes 
@@ -93,16 +95,17 @@ export async function listCommentsByUserId(userId: number, entityType: CommentTy
     }
 }
 
-// Listar todos os comentários de uma entidade (jogo ou post)
+// Listar todos os comentários de uma entidade (jogo ou post) com informações de usuário
 export async function listCommentsByEntityId(entityId: number, entityType: CommentType, orderBy: ListOrderBy) {
     try {
         const orderByClause = getCommentOrderClause(orderBy);
 
         const getCommentsQuery = `
-            SELECT c.*, 
+            SELECT c.*, u.username, u.email,
                    COALESCE(l.like_count, 0) AS like_count, 
                    COALESCE(d.dislike_count, 0) AS dislike_count 
             FROM tb_comments c
+            INNER JOIN tb_users u ON c.user_id = u.id
             LEFT JOIN (
                 SELECT entity_id, COUNT(*) AS like_count 
                 FROM tb_likes_dislikes 

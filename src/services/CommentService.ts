@@ -1,3 +1,4 @@
+import { EntityType } from './../interfaces/LikesDislikes';
 import { Comment } from "../interfaces/Comment";
 import { ListOrderBy } from './../utils/listOrder';
 import { CommentType } from '../interfaces/Comment';
@@ -11,6 +12,10 @@ import {
 } from "../repositories/CommentRepository";
 import { findGameByIdService } from "./GameService";
 import { getCommunityPostById } from "../repositories/CommunityPostRepository";
+import { 
+    postReply,
+    listRepliesByCommentId
+ } from "../repositories/CommentReplyRepository";
 import { 
     CREATE_ENTITY_ERROR, 
     FIND_ENTITY_ERROR,
@@ -118,5 +123,44 @@ export async function deleteService(commentId: number, userId: number) {
         return { success: true, statusCode: 200, message: DELETE_COMMENT_SUCCESS };
     } catch (error) {
         return { success: false, statusCode: 500, error: `${DELETE_ENTITY_ERROR}:${error}` };
+    }
+}
+
+export async function postReplyService(comment: Comment, originalCommentId: number) {
+    try {
+        if (!comment.content || comment.content === '') {
+            return { success: false, statusCode: 400, error: NO_CONTENT_ERROR };
+        }
+
+        const originalComment: Comment = await getCommentById(originalCommentId) 
+
+        if (!originalComment) {
+            return { success: false, statusCode: 404, error: FIND_ENTITY_ERROR };
+        }
+        comment.entity_id = originalComment.entity_id
+
+        const newComment: Comment = await postComment(comment, originalComment.entity_type);
+
+        const data = await postReply(originalCommentId, newComment.id)
+
+        return { success: true, statusCode: 200, data };
+    } catch (error) {
+        return { success: false, statusCode: 500, error: `${CREATE_ENTITY_ERROR}:${error}` };
+    }
+}
+
+export async function listRepliesService(originalComment: number, orderBy: ListOrderBy) {
+    try {
+        const comment = await getCommentById(originalComment) 
+
+        if (!comment) {
+            return { success: false, statusCode: 404, error: FIND_ENTITY_ERROR };
+        }
+
+        const data: Comment[] = await listRepliesByCommentId(originalComment, orderBy)
+
+        return { success: true, statusCode: 200, data };
+    } catch (error) {
+        return { success: false, statusCode: 500, error: `${CREATE_ENTITY_ERROR}:${error}` };
     }
 }
