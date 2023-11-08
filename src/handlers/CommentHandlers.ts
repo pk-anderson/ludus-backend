@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import { Comment } from '../interfaces/Comment';
-import { ListOrderBy } from './../utils/listOrder';
-import { INTERNAL_SERVER_ERROR } from './../utils/consts'
+import { ListOrderBy } from '../utils/listOrder';
+import { INTERNAL_SERVER_ERROR } from '../utils/consts'
 import {
     createService,
     updateService,
     listByUserService,
-    listByGameService,
+    listByEntityService,
     deleteService
 } from '../services/CommentService'
 import { 
@@ -15,41 +15,41 @@ import {
   listWhoLikedService,
   listWhoDislikedService
  } from '../services/LikeDislikeService';
+import { CommentType } from '../interfaces/Comment';
 import { EntityType } from '../interfaces/LikesDislikes';
 
 export async function createHandler(req: Request, res: Response) {
-    try {
-      const comment: Comment = req.body
-      comment.user_id = req.decodedToken!.id
-      const result = await createService(comment);
-  
-      if (result.success) {
-        res.status(result.statusCode || 200).json(result.data);
-      } else {
-        res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
-      }
-    } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
-      res.status(500).json({ message: INTERNAL_SERVER_ERROR });
-    }
-  }
+  try {
+      const comment: Comment = req.body;
+      comment.user_id = req.decodedToken!.id;
+      const commentType: CommentType = req.body.comment_type;
+      const result = await createService(comment, commentType);
 
-  export async function updateHandler(req: Request, res: Response) {
-    try {
-      const commentId = parseInt(req.params.id, 10);
-      const { content } = req.body
-      const result = await updateService(commentId, req.decodedToken!.id, content);
-  
       if (result.success) {
-        res.status(result.statusCode || 200).json(result.data);
+          res.status(result.statusCode || 200).json(result.data);
       } else {
-        res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
+          res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
-    } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+  } catch (error) {
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
-    }
   }
+}
+
+export async function updateHandler(req: Request, res: Response) {
+  try {
+      const commentId = parseInt(req.params.id, 10);
+      const { content } = req.body;
+      const result = await updateService(commentId, req.decodedToken!.id, content);
+
+      if (result.success) {
+          res.status(result.statusCode || 200).json(result.data);
+      } else {
+          res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
+      }
+  } catch (error) {
+      res.status(500).json({ message: INTERNAL_SERVER_ERROR });
+  }
+}
 
   export async function deleteHandler(req: Request, res: Response) {
     try {
@@ -71,7 +71,8 @@ export async function createHandler(req: Request, res: Response) {
     try {
       const userId = parseInt(req.params.userId, 10);
       const orderBy: ListOrderBy = parseInt(req.query.order as string, 10) || 1;
-      const result = await listByUserService(userId, orderBy);
+      const commentType: CommentType = req.body.comment_type
+      const result = await listByUserService(userId, commentType, orderBy);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.data);
@@ -84,11 +85,12 @@ export async function createHandler(req: Request, res: Response) {
     }
   }
 
-  export async function listByGameHandler(req: Request, res: Response) {
+  export async function listByEntityHandler(req: Request, res: Response) {
     try {
-      const gameId = parseInt(req.params.gameId, 10);
+      const entityId = parseInt(req.params.entityId, 10);
       const orderBy: ListOrderBy = parseInt(req.query.order as string, 10) || 1;
-      const result = await listByGameService(gameId, orderBy);
+      const commentType: CommentType = req.body.comment_type
+      const result = await listByEntityService(entityId, commentType, orderBy);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.data);

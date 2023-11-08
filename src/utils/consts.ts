@@ -27,6 +27,7 @@ export const DELETE_RATING_SUCCESS = 'Avaliação removida com sucesso.'
 
 // comment
 export const NO_CONTENT_ERROR = 'O comentário está vazio.'
+export const INVALID_TYPE_ERROR = 'O tipo de comentário é inválido.'
 export const DELETE_COMMENT_SUCCESS = 'Comentário removido com sucesso.'
 export const LIKE_SUCCESS = 'Like atribuído com sucesso.'
 export const REMOVELIKE_SUCCESS = 'Like removido com sucesso.'

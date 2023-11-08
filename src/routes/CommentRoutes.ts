@@ -5,7 +5,7 @@ import {
     updateHandler,
     deleteHandler,
     listByUserHandler,
-    listByGameHandler,
+    listByEntityHandler,
     likeCommentHandler,
     dislikeCommentHandler,
     listWhoLikedHandler,
@@ -23,8 +23,8 @@ router.put('/:id', validateToken, updateHandler);
 // Rota para deletar comentário
 router.delete('/:id', validateToken, deleteHandler);
 
-// Rota para listar comentários por jogo
-router.get('/game/:gameId', validateToken, listByGameHandler);
+// Rota para listar comentários por entidade (game ou post)
+router.get('/:entityId', validateToken, listByEntityHandler);
 
 // Rota para listar comentários por usuário
 router.get('/user/:userId', validateToken, listByUserHandler);
