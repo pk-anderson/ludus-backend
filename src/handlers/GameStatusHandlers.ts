@@ -1,20 +1,21 @@
 import { Request, Response } from 'express';
-import { StatusType } from '../interfaces/GameStatus';
+import { GameStatus, StatusType } from '../interfaces/GameStatus';
 import { 
-    listGamesService,
-    findGameByIdService,
-    listGamesByStatusService
- } from "../services/GameService";
+    createStatusService,
+    updateStatusService,
+    deleteStatusService
+ } from '../services/GameStatusService';
 import { 
     INTERNAL_SERVER_ERROR 
 } from './../utils/consts'
 
-export async function listHandler(req: Request, res: Response) {
+
+export async function createHandler(req: Request, res: Response) {
     try {
-      const page = parseInt(req.query.page as string, 10) || 1;
-      const limit = parseInt(req.query.limit as string, 10) || 10;
-      const text = req.query.text as string;
-      const result = await listGamesService(text, limit, page);
+      const status: GameStatus = req.body
+      status.game_id = parseInt(req.params.gameId, 10);
+      status.user_id = req.decodedToken!.id
+      const result = await createStatusService(status);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.data);
@@ -27,10 +28,11 @@ export async function listHandler(req: Request, res: Response) {
     }
   }
 
-  export async function listByStatusHandler(req: Request, res: Response) {
+  export async function updateHandler(req: Request, res: Response) {
     try {
-      const status = req.params.status as StatusType;
-      const result = await listGamesByStatusService(req.decodedToken!.id, status);
+      const status: StatusType = req.body
+      const id = parseInt(req.params.id, 10);
+      const result = await updateStatusService(id, status);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.data);
@@ -43,10 +45,10 @@ export async function listHandler(req: Request, res: Response) {
     }
   }
 
-  export async function findHandler(req: Request, res: Response) {
+  export async function deleteHandler(req: Request, res: Response) {
     try {
-      const gameId = parseInt(req.params.id, 10);
-      const result = await findGameByIdService(req.decodedToken!.id, gameId);
+      const id = parseInt(req.params.id, 10);
+      const result = await deleteStatusService(id);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.data);

@@ -20,6 +20,7 @@ export interface Game {
   first_release_date: number;
   genres: Genre[];
   name: string;
+  status: string;
   player_perspectives: PlayerPerspective[];
   summary: string;
 }
