@@ -95,35 +95,45 @@ export async function listGamesByStatusService(userId: number, status: StatusTyp
 
 export async function findGameByIdService(userId: number, gameId: number) {
     try {
+        const status = await getGameStatus(userId, gameId);
+
         // Verificar se busca está salva como cache
-        const cache = await getCache(gameId.toString())
+        const cacheKey = `${gameId}-${status?.status || StatusType.NO_STATUS}`;
+        const cache = await getCache(cacheKey);
+
         if (cache) {
-            return { success: true, 
-                statusCode: 200, 
-                data: JSON.parse(cache)
+            return {
+                success: true,
+                statusCode: 200,
+                data: JSON.parse(cache),
             };
         }
 
         // Se não estiver, realizar nova busca
-        const twitchToken = await getTwitchAccessTokenOrFetch()
-        const data: Game = await getGameById(twitchToken.access_token, gameId)
+        const twitchToken = await getTwitchAccessTokenOrFetch();
+        let data: Game = await getGameById(twitchToken.access_token, gameId);
 
-        const status = await getGameStatus(userId, gameId)
         if (status) {
-            data.status = status.status
+            // Adicionar o status ao jogo na resposta
+            data = {
+                ...data,
+                status: status?.status || StatusType.NO_STATUS,
+            };
         }
 
         // Salvar nova busca em cache
-        await saveCache(`${gameId}-${status.status}`, JSON.stringify(data))
+        await saveCache(cacheKey, JSON.stringify(data));
 
-        return { success: true, 
-            statusCode: 200, 
-            data
+        return {
+            success: true,
+            statusCode: 200,
+            data,
         };
     } catch (error) {
-        return { success: false, 
-            statusCode: 500, 
-            error: `${FIND_ENTITY_ERROR}:${error}`
-          };
+        return {
+            success: false,
+            statusCode: 500,
+            error: `${FIND_ENTITY_ERROR}:${error}`,
+        };
     }
 }

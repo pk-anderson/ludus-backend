@@ -23,10 +23,10 @@ import {
   router.post('/:gameId/status', validateToken, createHandler);
 
   // Rota para atualizar status de um jogo
-  router.put('/:gameId/status', validateToken, updateHandler);
+  router.put('/:statusId/status', validateToken, updateHandler);
 
    // Rota para remover status de um jogo
-   router.delete('/:gameId/status', validateToken, deleteHandler);
+   router.delete('/:statusId/status', validateToken, deleteHandler);
 
   // Rota para listar jogos por status
   router.get('/list/:status', validateToken, listByStatusHandler);

@@ -3,6 +3,8 @@ export enum StatusType {
     IN_PROGRESS = 'Em Andamento',
     ABANDONED = 'Abandonado',
     WANT_TO_PLAY = 'Quero Jogar',
+    FAVORITE = 'Favorito',
+    NO_STATUS = 'Sem Status'
 }
 
 export interface GameStatus {

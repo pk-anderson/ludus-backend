@@ -35,6 +35,9 @@ export const DISLIKE_SUCCESS = 'Dislike atribuído com sucesso.'
 export const REMOVEDISLIKE_SUCCESS = 'Dislike removido com sucesso.'
 export const INVALID_ENTITY = 'Tipo de entidade enviado é inválido.'
 
+// status
+export const INVALID_STATUS_ERROR = 'O tipo de status é inválido.'
+
 // post
 export const NOT_MEMBER_ERROR = 'Usuário deve ser membro da comunidade para fazer um post.'
 export const DELETE_POST_SUCCESS = 'Postagem removida com sucesso.'

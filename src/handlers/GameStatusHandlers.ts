@@ -30,8 +30,8 @@ export async function createHandler(req: Request, res: Response) {
 
   export async function updateHandler(req: Request, res: Response) {
     try {
-      const status: StatusType = req.body
-      const id = parseInt(req.params.id, 10);
+      const status: StatusType = req.body.status
+      const id = parseInt(req.params.statusId, 10);
       const result = await updateStatusService(id, status);
   
       if (result.success) {
@@ -47,7 +47,7 @@ export async function createHandler(req: Request, res: Response) {
 
   export async function deleteHandler(req: Request, res: Response) {
     try {
-      const id = parseInt(req.params.id, 10);
+      const id = parseInt(req.params.statusId, 10);
       const result = await deleteStatusService(id);
   
       if (result.success) {

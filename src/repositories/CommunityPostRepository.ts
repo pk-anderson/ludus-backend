@@ -119,7 +119,6 @@ export async function listCommunityPostsByUserId(userId: number, orderBy: ListOr
 export async function listCommunityPostsByCommunityId(communityId: number, orderBy: ListOrderBy) {
     try {
         const orderClause = getPostOrderClause(orderBy);
-        console.log(orderClause)
         const getPostsQuery = `
             SELECT p.*, 
                    COALESCE(l.like_count, 0) AS like_count, 
@@ -139,7 +138,6 @@ export async function listCommunityPostsByCommunityId(communityId: number, order
             ) d ON p.id = d.entity_id
             WHERE p.community_id = $1 AND p.deleted_at IS NULL
             ${orderClause}`;
-            console.log(getPostsQuery)
 
         const result = await pool.query(getPostsQuery, [communityId]);
 

@@ -35,7 +35,7 @@ export async function createService(comment: Comment, entityType: CommentType) {
         }
 
         if (entityType === CommentType.GAME) {
-          const response = await findGameByIdService(comment.entity_id)
+          const response = await findGameByIdService(comment.user_id, comment.entity_id)
           if (response.success === false) {
             return { success: false, statusCode: 404, error: FIND_ENTITY_ERROR };
           }

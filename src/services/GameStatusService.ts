@@ -10,15 +10,22 @@ import {
      CREATE_ENTITY_ERROR,
      FIND_ENTITY_ERROR,
      UPDATE_ENTITY_ERROR,
-     DELETE_ENTITY_ERROR
+     DELETE_ENTITY_ERROR,
+     INVALID_STATUS_ERROR
      } from "../utils/consts";
 
 export async function createStatusService(status: GameStatus) {
     try {
+        if (!Object.values(StatusType).includes(status.status)) {
+            return { success: false, 
+                statusCode: 400, 
+                error: INVALID_STATUS_ERROR,
+            };
+          }
         const exists: GameStatus = await getStatusByUserAndGame(status.user_id, status.game_id)
 
         if (exists) {
-            const data = updateStatus(exists.id, status.status)
+            const data = await updateStatus(exists.id, status.status)
             return { success: true, 
                 statusCode: 200, 
                 data
@@ -46,11 +53,16 @@ export async function updateStatusService(statusId: number, statusType: StatusTy
         if (!exists) {
             return { success: false, 
                 statusCode: 404, 
-                message: FIND_ENTITY_ERROR
+                error: FIND_ENTITY_ERROR
             }
         }
-
-        const data = await updateStatus(exists.id, statusType)
+        if (!Object.values(StatusType).includes(statusType)) {
+            return { success: false, 
+                statusCode: 400, 
+                error: INVALID_STATUS_ERROR,
+            };
+          }
+        const data: GameStatus = await updateStatus(statusId, statusType)
         return { success: true, 
             statusCode: 200, 
             data
