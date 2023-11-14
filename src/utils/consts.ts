@@ -48,6 +48,10 @@ export const DELETE_FROM_LIBRARY_SUCCESS = 'O jogo foi removido da sua bibliotec
 export const NOT_MEMBER_ERROR = 'Usuário deve ser membro da comunidade para fazer um post.'
 export const DELETE_POST_SUCCESS = 'Postagem removida com sucesso.'
 
+// game list
+export const INVALID_TITLE_ERROR = 'O título da lista está vazio.'
+export const INVALID_ITEM_ERROR = 'O jogo já está adicionado em sua lista.'
+
 // ERROR 
 
 // member
