@@ -26,7 +26,7 @@ import {
  router.post('/:id/library', validateToken, addGameHandler);
 
  // Rota para remover um jogo da biblioteca do usuário
- router.delete('/:itemId/library', validateToken, removeGameHandler);
+ router.delete('/:id/library', validateToken, removeGameHandler);
 
  // Rota para listar jogos da biblioteca do usuário
  router.get('/:userId/library', validateToken, listUserLibraryHandler);

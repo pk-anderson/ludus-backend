@@ -49,16 +49,16 @@ import {
      }
  }
 
- export async function removeUserLibraryItem(itemId: number) {
+ export async function removeUserLibraryItem(userId: number, gameId: number) {
      try {
-         const libraryItem = await getUserLibraryById(itemId)
+         const libraryItem = await getUserLibraryItemByUserAndGame(userId, gameId)
          if (!libraryItem) {
             return { success: false, 
                 statusCode: 404,
                 message: FIND_ENTITY_ERROR,
               };
          }
-         await deleteUserLibraryItem(itemId)
+         await deleteUserLibraryItem(libraryItem.id)
          return { success: true, 
             statusCode: 200,
             message: DELETE_FROM_LIBRARY_SUCCESS,

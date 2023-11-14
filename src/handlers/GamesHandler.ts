@@ -32,8 +32,8 @@ export async function addGameHandler(req: Request, res: Response) {
 
 export async function removeGameHandler(req: Request, res: Response) {
   try {
-    const itemId = parseInt(req.params.itemId, 10);
-    const result = await removeUserLibraryItem(itemId);
+    const gameId = parseInt(req.params.id, 10);
+    const result = await removeUserLibraryItem(req.decodedToken!.id, gameId);
 
     if (result.success) {
       res.status(result.statusCode || 200).json(result.message);
