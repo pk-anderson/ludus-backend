@@ -13,7 +13,7 @@ import {
 export async function createHandler(req: Request, res: Response) {
     try {
       const status: GameStatus = req.body
-      status.game_id = parseInt(req.params.gameId, 10);
+      status.game_id = parseInt(req.params.id, 10);
       status.user_id = req.decodedToken!.id
       const result = await createStatusService(status);
   

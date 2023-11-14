@@ -15,6 +15,7 @@ import {
     getGameById,
     listGamesByGameIds
  } from "../igdb/Games";
+import { listUserLibrary } from '../repositories/GameLibraryRepository';
 import { 
     LIST_ENTITY_ERROR,
     FIND_ENTITY_ERROR
@@ -65,7 +66,38 @@ export async function listGamesByStatusService(userId: number, status: StatusTyp
     try { 
         const gameIds = await listStatusByUserAndType(userId, status)
         
-        // Se houver filtro, verificar se busca está salva como cache
+        // Verificar se busca está salva como cache
+        const cache = await getCache(`${userId}-${gameIds}`)
+        if (cache) {
+            return { success: true, 
+                statusCode: 200,
+                data: JSON.parse(cache)
+            };
+        }
+        // Se não estiver, realizar nova busca
+        const twitchToken = await getTwitchAccessTokenOrFetch()   
+        
+        const data = await listGamesByGameIds(twitchToken.access_token, gameIds)
+
+        // Salvar nova busca como cache
+        await saveCache(`${userId}-${gameIds}`, JSON.stringify(data))
+
+        return { success: true, 
+            statusCode: 200, 
+            data
+        };
+    } catch (error) {
+        return { success: false, 
+            statusCode: 500, 
+            error: `${LIST_ENTITY_ERROR}:${error}`
+          };
+    }
+}
+
+export async function listGamesByLibrary(userId: number) {
+    try {
+        const gameIds = await listUserLibrary(userId)
+        // Verificar se busca está salva como cache
         const cache = await getCache(`${userId}-${gameIds}`)
         if (cache) {
             return { success: true, 

@@ -38,6 +38,12 @@ export const INVALID_ENTITY = 'Tipo de entidade enviado é inválido.'
 // status
 export const INVALID_STATUS_ERROR = 'O tipo de status é inválido.'
 
+//library
+export const ADD_TO_LIBRARY_SUCCESS = 'O jogo foi adicionado a sua biblioteca com sucesso.'
+export const ADD_TO_LIBRARY_ERROR = 'O jogo já está na sua biblioteca.'
+export const UPDATE_TO_LIBRARY_SUCCESS = 'O jogo foi readicionado a sua biblioteca com sucesso.'
+export const DELETE_FROM_LIBRARY_SUCCESS = 'O jogo foi removido da sua biblioteca com sucesso.'
+
 // post
 export const NOT_MEMBER_ERROR = 'Usuário deve ser membro da comunidade para fazer um post.'
 export const DELETE_POST_SUCCESS = 'Postagem removida com sucesso.'
