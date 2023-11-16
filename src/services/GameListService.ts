@@ -87,7 +87,9 @@ export async function getGameListService(listId: number) {
 
         // buscar jogos
         const twitchToken = await getTwitchAccessTokenOrFetch()   
-        data.games = await listGamesByGameIds(twitchToken.access_token, data.game_ids.join(', '))
+        if (data.game_ids.join(', ') !== '') {
+            data.games = await listGamesByGameIds(twitchToken.access_token, data.game_ids.join(', '))
+        }
 
         return { success: true, 
             statusCode: 200,

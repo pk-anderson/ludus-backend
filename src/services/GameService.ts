@@ -76,8 +76,10 @@ export async function listGamesByStatusService(userId: number, status: StatusTyp
         }
         // Se não estiver, realizar nova busca
         const twitchToken = await getTwitchAccessTokenOrFetch()   
-        
-        const data = await listGamesByGameIds(twitchToken.access_token, gameIds)
+        let data: Game[] = []
+        if (gameIds !== '') {
+            data = await listGamesByGameIds(twitchToken.access_token, gameIds)
+        }
 
         // Salvar nova busca como cache
         await saveCache(`${userId}-${gameIds}`, JSON.stringify(data))
@@ -108,7 +110,10 @@ export async function listGamesByLibrary(userId: number) {
         // Se não estiver, realizar nova busca
         const twitchToken = await getTwitchAccessTokenOrFetch()   
         
-        const data = await listGamesByGameIds(twitchToken.access_token, gameIds)
+        let data: Game[] = []
+        if (gameIds !== '') {
+            data = await listGamesByGameIds(twitchToken.access_token, gameIds)
+        }
 
         // Salvar nova busca como cache
         await saveCache(`${userId}-${gameIds}`, JSON.stringify(data))

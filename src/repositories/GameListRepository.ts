@@ -6,7 +6,7 @@ import { pool } from '../index';
 export async function saveGameList(gameList: GameList){
     try {
         const insertGameListQuery = `
-            INSERT INTO tb_game_lists (user_id, title, description, cover_image_url, created_at)
+            INSERT INTO tb_game_lists (user_id, title, description, cover_image, created_at)
             VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
             RETURNING *`;
 
@@ -32,7 +32,7 @@ export async function updateGameList(gameList:GameList ) {
             SET 
                 title = COALESCE($2, title),
                 description = COALESCE($3, description),
-                cover_image_url = COALESCE($4, cover_image_url),
+                cover_image = COALESCE($4, cover_image),
                 updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *`;
