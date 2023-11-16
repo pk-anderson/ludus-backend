@@ -32,3 +32,10 @@ export async function comparePasswords(
     throw new Error(`Erro ao comparar as senhas: ${error}`);
   }
 }
+
+export function convertByteaToBase64(bytea: Buffer | null): string | null {
+  if (!bytea) {
+      return null;
+  }
+  return `data:image/jpeg;base64,${bytea.toString('base64')}`;
+}

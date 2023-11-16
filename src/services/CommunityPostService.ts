@@ -23,6 +23,7 @@ import {
     DELETE_POST_SUCCESS,
     NOT_MEMBER_ERROR
 } from "../utils/consts";
+import { convertByteaToBase64 } from '../utils/encryptor';
 
 export async function createCommunityPostService(post: CommunityPost) {
     try {
@@ -109,10 +110,7 @@ export async function listCommunityPostsByUser(userId: number, orderBy: ListOrde
 
         // Transforme o campo image de todos os usuários em URLs base64
         for (const item of result) {
-            if (item.image) {
-            const dataURL = `data:image/jpeg;base64,${item.image.toString('base64')}`;
-            item.image = dataURL;
-            }
+            item.image = convertByteaToBase64(item.image);
         }
         const data: CommunityPostResponse[] = result
 
@@ -143,17 +141,14 @@ export async function getCommunityPostByIdService(postId: number): Promise<any> 
         }
 
         // Transforme o campo image em uma URL base64
-      if (post.image) {
-        const dataURL = `data:image/jpeg;base64,${post.image.toString('base64')}`;
-        post.image = dataURL;
-      }
+        post.image = convertByteaToBase64(post.image);
 
-      const data: CommunityPostResponse = post
-        return {
-            success: true,
-            statusCode: 200,
-            data
-        };
+        const data: CommunityPostResponse = post
+            return {
+                success: true,
+                statusCode: 200,
+                data
+            };
     } catch (error) {
         return {
             success: false,
@@ -169,10 +164,7 @@ export async function listCommunityPostsByCommunity(communityId: number, orderBy
 
         // Transforme o campo image de todos os usuários em URLs base64
         for (const item of result) {
-            if (item.image) {
-            const dataURL = `data:image/jpeg;base64,${item.image.toString('base64')}`;
-            item.image = dataURL;
-            }
+            item.image = convertByteaToBase64(item.image);
         }
         const data: CommunityPostResponse[] = result
 

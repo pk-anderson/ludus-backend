@@ -18,6 +18,7 @@ import {
     UNFOLLOWING_ERROR,
     OWN_USER_FOLLOW 
 } from './../utils/consts'
+import { convertByteaToBase64 } from '../utils/encryptor';
 
 export async function followService(userId: number, followingId: number) {
     try {
@@ -129,10 +130,7 @@ export async function followService(userId: number, followingId: number) {
 
       // Transforme o campo profile_pic de todos os usuários em URLs base64
       for (const item of result) {
-        if (item.profile_pic) {
-          const dataURL = `data:image/jpeg;base64,${item.profile_pic.toString('base64')}`;
-          item.profile_pic = dataURL;
-        }
+        item.profile_pic = convertByteaToBase64(item.profile_pic);
       }
 
       const data: Follower[] = result
@@ -164,10 +162,7 @@ export async function followService(userId: number, followingId: number) {
 
       // Transforme o campo profile_pic de todos os usuários em URLs base64
       for (const item of result) {
-        if (item.profile_pic) {
-          const dataURL = `data:image/jpeg;base64,${item.profile_pic.toString('base64')}`;
-          item.profile_pic = dataURL;
-        }
+        item.profile_pic = convertByteaToBase64(item.profile_pic);
       }
 
       const data: Follower[] = result

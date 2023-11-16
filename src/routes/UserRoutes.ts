@@ -30,7 +30,7 @@ router.get('/picture/:id', validateToken, profilePicHandler);
 router.get('/:id', validateToken, findHandler);
 
 // Rota para atualizar um usuário por id
-router.put('/update', validateToken, updateHandler);
+router.put('/update', validateToken, upload.single('file'), updateHandler);
 
 // Rota para deletar um usuário por id
 router.delete('/delete', validateToken, deleteHandler);

@@ -1,42 +1,29 @@
 import { Request, Response } from 'express';
+import { GameList, GameListItem } from '../interfaces/GameList';
 import { 
-    signupService,
-    listService,
-    findService,
-    deleteService,
-    updateService,
-    reactivateService,
-    updatePasswordService,
-    profilePicService
- } from '../services/UserService';
-import { User } from './../interfaces/User';
-import { INTERNAL_SERVER_ERROR } from './../utils/consts'
+    INTERNAL_SERVER_ERROR 
+} from './../utils/consts'
+import { 
+    createListService,
+    getAllListsService,
+    getGameListService,
+    updateListService,
+    deleteListService,
+    addGameItemService,
+    removeGameItemService
+ } from '../services/GameListService';
 
-export async function signupHandler(req: Request, res: Response) {
+ export async function createListHandler(req: Request, res: Response) {
     try {
-      const user: User = req.body
-      const profilePic = req.file;
-      if (profilePic) {
-        user.profile_pic = profilePic.buffer
+      const gameList: GameList = req.body
+      gameList.user_id = req.decodedToken!.id
+      // Buscar imagem de capa
+      const cover = req.file;
+      if (cover) {
+        gameList.cover_image = cover.buffer
       }
-      
-      const result = await signupService(user);
-  
-      if (result.success) {
-        res.status(result.statusCode || 200).json(result.data);
-      } else {
-        res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
-      }
-    } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
-      res.status(500).json({ message: INTERNAL_SERVER_ERROR });
-    }
-  }
-  
-  export async function listHandler(req: Request, res: Response) {
-    try {
-
-      const result = await listService();
+      // Criar lista
+      const result = await createListService(gameList);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.data);
@@ -49,12 +36,17 @@ export async function signupHandler(req: Request, res: Response) {
     }
   }
 
-  export async function findHandler(req: Request, res: Response) {
+  export async function updateListHandler(req: Request, res: Response) {
     try {
-      // Obter o ID do usuário a ser buscado a partir dos parâmetros da URL
-      const userId = parseInt(req.params.id, 10);
-
-      const result = await findService(userId);
+      const gameList: GameList = req.body
+      gameList.id = parseInt(req.params.listId, 10);
+      // Buscar imagem de capa
+      const cover = req.file;
+      if (cover) {
+        gameList.cover_image = cover.buffer
+      }
+      // Atualizar lista
+      const result = await updateListService(gameList);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.data);
@@ -67,12 +59,11 @@ export async function signupHandler(req: Request, res: Response) {
     }
   }
 
-  export async function profilePicHandler(req: Request, res: Response) {
+  export async function deleteListHandler(req: Request, res: Response) {
     try {
-      // Obter o ID do usuário a ser buscado a partir dos parâmetros da URL
-      const userId = parseInt(req.params.id, 10);
-      
-      const result = await profilePicService(userId);
+      const listId = parseInt(req.params.listId, 10);
+      // remover lista
+      const result = await deleteListService(listId, req.decodedToken!.id);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.data);
@@ -85,12 +76,11 @@ export async function signupHandler(req: Request, res: Response) {
     }
   }
 
-  export async function deleteHandler(req: Request, res: Response) {
+  export async function getAllListsHandler(req: Request, res: Response) {
     try {
-      // Acesso ao payload decodificado pelo token
-    const decodedToken = req.decodedToken;
-
-      const result = await deleteService(decodedToken!.id);
+      const userId = parseInt(req.params.userId, 10);
+      // buscar listas
+      const result = await getAllListsService(userId);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.data);
@@ -103,17 +93,11 @@ export async function signupHandler(req: Request, res: Response) {
     }
   }
 
-  export async function updateHandler(req: Request, res: Response) {
+  export async function getListHandler(req: Request, res: Response) {
     try {
-      const user: User = req.body
-      user.id = req.decodedToken!.id
-
-      const profilePic = req.file;
-      if (profilePic) {
-        user.profile_pic = profilePic.buffer
-      }
-
-      const result = await updateService(user);
+      const listId = parseInt(req.params.listId, 10);
+      // buscar listas
+      const result = await getGameListService(listId);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.data);
@@ -126,10 +110,17 @@ export async function signupHandler(req: Request, res: Response) {
     }
   }
 
-  export async function reactivateHandler(req: Request, res: Response) {
+
+ export async function addToListHandler(req: Request, res: Response) {
     try {
-      const { email, password } = req.body
-      const result = await reactivateService(email, password);
+      const item: GameListItem = {
+        id: 0,
+        user_id: req.decodedToken!.id,
+        list_id: parseInt(req.params.listId, 10),
+        game_id: parseInt(req.params.id, 10)
+      }
+      // Criar lista
+      const result = await addGameItemService(item);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.data);
@@ -142,12 +133,16 @@ export async function signupHandler(req: Request, res: Response) {
     }
   }
 
-  export async function updatePasswordHandler(req: Request, res: Response) {
+  export async function removeFromListHandler(req: Request, res: Response) {
     try {
-      const { password } = req.body
-      const userId = req.decodedToken!.id
-
-      const result = await updatePasswordService(userId, password);
+      const item: GameListItem = {
+        id: 0,
+        user_id: req.decodedToken!.id,
+        list_id: parseInt(req.params.listId, 10),
+        game_id: parseInt(req.params.id, 10)
+      }
+      // Criar lista
+      const result = await removeGameItemService(item);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.data);

@@ -12,14 +12,18 @@ import {
     listWhoLikedHandler,
     listWhoDislikedHandler
 } from '../handlers/CommunityPostHandlers'
+import multer from 'multer';
+
+const storage = multer.memoryStorage(); // Armazena os dados do arquivo em memória
+const upload = multer({ storage: storage });
 
 const router = express.Router();
 
 // Rota para criar postagem
-router.post('/:communityId/create', validateToken, createHandler);
+router.post('/:communityId/create', validateToken, upload.single('file'), createHandler);
 
 // Rota para atualizar postagem
-router.put('/:communityId/update/:id', validateToken, updateHandler);
+router.put('/:communityId/update/:id', validateToken, upload.single('file'), updateHandler);
 
 // Rota para buscar postagem por id
 router.get('/:id', validateToken, getByIdHandler);

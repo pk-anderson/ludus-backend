@@ -31,6 +31,7 @@ import {
     UPDATE_ENTITY_ERROR,
     FIND_ENTITY_ERROR
   } from '../utils/consts';
+  import { convertByteaToBase64 } from '../utils/encryptor';
 
   export async function signupService(user: User) {
     try {
@@ -100,10 +101,7 @@ import {
 
       // Transforme o campo profile_pic de todos os usuários em URLs base64
       for (const item of userResult) {
-        if (item.profile_pic) {
-          const dataURL = `data:image/jpeg;base64,${item.profile_pic.toString('base64')}`;
-          item.profile_pic = dataURL;
-        }
+          item.profile_pic = convertByteaToBase64(item.profile_pic);
       }
 
       const data: UserResponse[] = userResult
@@ -132,10 +130,8 @@ import {
         };
       }
       // Transforme o campo profile_pic em uma URL base64
-      if (userResult.profile_pic) {
-        const dataURL = `data:image/jpeg;base64,${userResult.profile_pic.toString('base64')}`;
-        userResult.profile_pic = dataURL;
-      }
+      userResult.profile_pic = convertByteaToBase64(userResult.profile_pic);
+
       // Mapear o resultado para a interface de resposta
       const user: UserResponse = userResult;
 

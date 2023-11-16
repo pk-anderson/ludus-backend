@@ -16,7 +16,7 @@ export interface GameListItem {
     user_id: number;
     list_id: number;
     game_id: number;
-    created_at: Date;
+    created_at?: Date;
     updated_at?: Date | null;
     deleted_at?: Date | null;
 }
