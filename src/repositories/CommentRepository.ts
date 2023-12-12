@@ -7,7 +7,18 @@ import { CommentType } from '../interfaces/Comment';
 export async function postComment(comment: Comment, entityType: CommentType) {
     try {
         const insertCommentQuery =
-            'INSERT INTO tb_comments (user_id, entity_id, entity_type, content, created_at) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP) RETURNING *';
+            `WITH inserted_comment AS (
+                INSERT INTO tb_comments (user_id, entity_id, entity_type, content, created_at)
+                VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+                RETURNING *
+            )
+            SELECT ic.*, (
+                SELECT COUNT(*)
+                FROM tb_comments
+                WHERE user_id = $1
+            ) AS total_comments
+            FROM inserted_comment ic
+            `
         const insertCommentValues = [comment.user_id, comment.entity_id, entityType, comment.content];
         const result = await pool.query(insertCommentQuery, insertCommentValues);
 

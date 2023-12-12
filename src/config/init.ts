@@ -9,6 +9,7 @@ import gameRoutes from '../routes/GameRoutes'
 import ratingRoutes from '../routes/RatingRoutes'
 import commentRoutes from '../routes/CommentRoutes'
 import communityPostRoutes from '../routes/CommunityPostRoutes'
+import achievementRoutes from '../routes/AchievementRoutes'
 
 export function init() {
     const app = express();
@@ -35,6 +36,8 @@ export function init() {
     app.use('/comments', commentRoutes);
     // Utilizar as rotas relacionadas às postagens de comunidades
     app.use('/posts', communityPostRoutes);
+    // Utilizar as rotas relacionadas às conquistas
+    app.use('/achievements', achievementRoutes);
 
     //return
     return app

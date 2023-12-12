@@ -2,6 +2,7 @@ import { EntityType } from './../interfaces/LikesDislikes';
 import { Comment } from "../interfaces/Comment";
 import { ListOrderBy } from './../utils/listOrder';
 import { CommentType } from '../interfaces/Comment';
+import { checkCommentsAchievement } from '../achievements/Comment';
 import { 
     postComment,
     updateComment,
@@ -49,6 +50,8 @@ export async function createService(comment: Comment, entityType: CommentType) {
         }
 
         const data: Comment = await postComment(comment, entityType);
+
+        await checkCommentsAchievement(comment.user_id, data.total_comments)
 
         return { success: true, statusCode: 200, data };
     } catch (error) {
@@ -142,7 +145,7 @@ export async function postReplyService(comment: Comment, originalCommentId: numb
         const newComment: Comment = await postComment(comment, originalComment.entity_type);
 
         const data = await postReply(originalCommentId, newComment.id)
-
+        await checkCommentsAchievement(comment.user_id, newComment.total_comments)
         return { success: true, statusCode: 200, data };
     } catch (error) {
         return { success: false, statusCode: 500, error: `${CREATE_ENTITY_ERROR}:${error}` };

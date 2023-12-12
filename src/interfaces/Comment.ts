@@ -11,6 +11,7 @@ export interface Comment {
     created_at?: Date;
     updated_at?: Date;
     deleted_at?: Date;
+    total_comments: number;
 }
 
 export enum CommentType {
