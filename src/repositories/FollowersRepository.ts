@@ -29,15 +29,26 @@ export async function updateFollowStatus(userId: number, followingId: number) {
 // Seguir usuário
 export async function followUser(userId: number, followingId: number) {
   try {
-    const insertFollowingQuery =
-      'INSERT INTO tb_followers (user_id, following_id) VALUES ($1, $2) RETURNING *';
-    const insertFollowingValues = [userId, followingId];
-    await pool.query(insertFollowingQuery, insertFollowingValues);
+      // Seguir o usuário inserindo o relacionamento na tabela
+      const insertFollowingQuery =
+          'INSERT INTO tb_followers (user_id, following_id) VALUES ($1, $2) RETURNING *';
+      const insertFollowingValues = [userId, followingId];
+      await pool.query(insertFollowingQuery, insertFollowingValues);
 
+      // Contagem total de usuários que este user está seguindo
+      const countFollowingQuery =
+          'SELECT COUNT(*) AS total_following FROM tb_followers WHERE user_id = $1';
+      const countFollowingValues = [userId];
+      const result = await pool.query(countFollowingQuery, countFollowingValues);
+
+      return {
+          total: result.rows[0].total_following // Total de usuários que este user está seguindo
+      };
   } catch (error) {
-    throw new Error(`${error}`);
+      throw new Error(`${error}`);
   }
 }
+
 
 // Listar seguidores de um usuário
 export async function listFollowers(userId: number) {

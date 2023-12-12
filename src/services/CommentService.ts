@@ -49,9 +49,8 @@ export async function createService(comment: Comment, entityType: CommentType) {
           return { success: false, statusCode: 400, error: INVALID_TYPE_ERROR };
         }
 
-        const data: Comment = await postComment(comment, entityType);
-
-        await checkCommentsAchievement(comment.user_id, data.total_comments)
+        const { data, total } = await postComment(comment, entityType);
+        await checkCommentsAchievement(comment.user_id, total)
 
         return { success: true, statusCode: 200, data };
     } catch (error) {
@@ -142,10 +141,10 @@ export async function postReplyService(comment: Comment, originalCommentId: numb
         }
         comment.entity_id = originalComment.entity_id
 
-        const newComment: Comment = await postComment(comment, originalComment.entity_type);
+        const { data, total } = await postComment(comment, originalComment.entity_type);
 
-        const data = await postReply(originalCommentId, newComment.id)
-        await checkCommentsAchievement(comment.user_id, newComment.total_comments)
+        await postReply(originalCommentId, data.id)
+        await checkCommentsAchievement(comment.user_id, total)
         return { success: true, statusCode: 200, data };
     } catch (error) {
         return { success: false, statusCode: 500, error: `${CREATE_ENTITY_ERROR}:${error}` };

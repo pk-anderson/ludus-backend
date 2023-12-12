@@ -19,6 +19,7 @@ import {
     OWN_USER_FOLLOW 
 } from './../utils/consts'
 import { convertByteaToBase64 } from '../utils/encryptor';
+import { checkFollowAchievement } from '../achievements/Follower';
 
 export async function followService(userId: number, followingId: number) {
     try {
@@ -55,7 +56,9 @@ export async function followService(userId: number, followingId: number) {
             }
         } else {          
                 // O usuário ainda não está seguindo o usuário alvo, então fazemos um novo follow
-                await followUser(userId, followingId)
+                const { total } = await followUser(userId, followingId)
+                console.log(total)
+                await checkFollowAchievement(userId, total)
         }
 
         return { success: true, 

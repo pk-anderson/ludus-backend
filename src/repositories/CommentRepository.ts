@@ -4,30 +4,37 @@ import { ListOrderBy, getCommentOrderClause } from './../utils/listOrder';
 import { CommentType } from '../interfaces/Comment';
 
  // Função para inserir comentário na tabela tb_comments
-export async function postComment(comment: Comment, entityType: CommentType) {
+ export async function postComment(comment: Comment, entityType: CommentType) {
     try {
+        // Inserção do comentário na tabela
         const insertCommentQuery =
-            `WITH inserted_comment AS (
-                INSERT INTO tb_comments (user_id, entity_id, entity_type, content, created_at)
-                VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
-                RETURNING *
-            )
-            SELECT ic.*, (
-                SELECT COUNT(*)
-                FROM tb_comments
-                WHERE user_id = $1
-            ) AS total_comments
-            FROM inserted_comment ic
             `
+            INSERT INTO tb_comments (user_id, entity_id, entity_type, content, created_at)
+            VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+            RETURNING *
+            `;
         const insertCommentValues = [comment.user_id, comment.entity_id, entityType, comment.content];
-        const result = await pool.query(insertCommentQuery, insertCommentValues);
+        const insertedComment = await pool.query(insertCommentQuery, insertCommentValues);
 
-        // Retorna o comentário inserido
-        return result.rows[0];
+        // Contagem total de comentários do usuário após a inserção do novo comentário
+        const countCommentsQuery =
+            `
+            SELECT COUNT(*) AS total_comments
+            FROM tb_comments
+            WHERE user_id = $1;
+            `;
+        const countCommentsValues = [comment.user_id];
+        const commentCount = await pool.query(countCommentsQuery, countCommentsValues);
+
+        return {
+            data: insertedComment.rows[0], // Comentário inserido
+            total: commentCount.rows[0].total_comments // Total de comentários do usuário
+        };
     } catch (error) {
         throw new Error(`${error}`);
     }
 }
+
 
 // Atualizar conteúdo de comentário
 export async function updateComment(commentId: number, content: string) {

@@ -4,7 +4,6 @@ import {
     deleteUserLibraryItem,
     getUserLibraryById,
     getUserLibraryItemByUserAndGame,
-
  } from "../repositories/GameLibraryRepository";
 import { 
     ADD_TO_LIBRARY_SUCCESS,
@@ -15,6 +14,7 @@ import {
     FIND_ENTITY_ERROR,
     DELETE_ENTITY_ERROR
  } from "../utils/consts";
+import { checkGameLibraryAchievement } from "../achievements/Game";
 
  export async function addUserLibraryItem(userId: number, gameId: number) {
      try {
@@ -32,11 +32,12 @@ import {
                 // Se não estiver deletado, informar que o jogo já está na biblioteca
                 return { success: false, 
                     statusCode: 400,
-                    message: ADD_TO_LIBRARY_ERROR,
+                    error: ADD_TO_LIBRARY_ERROR,
                   };
             }
         }
-        await saveUserLibraryItem(userId, gameId);
+        const data  = await saveUserLibraryItem(userId, gameId);
+        await checkGameLibraryAchievement(userId, data.total_games_added)
         return { success: true, 
             statusCode: 200,
             message: ADD_TO_LIBRARY_SUCCESS,

@@ -2,17 +2,32 @@ import { pool } from '../index';
 
 export async function saveUserLibraryItem(userId: number, gameId: number) {
     try {
+        // Primeiro, inserimos o jogo na biblioteca do usuário
         const insertLibraryItemQuery =
-            'INSERT INTO tb_user_library (user_id, game_id, created_at) VALUES ($1, $2, CURRENT_TIMESTAMP) RETURNING *';
+            `
+            INSERT INTO tb_user_library (user_id, game_id, created_at)
+            VALUES ($1, $2, CURRENT_TIMESTAMP);
+            `;
         const insertLibraryItemValues = [userId, gameId];
-        const result = await pool.query(insertLibraryItemQuery, insertLibraryItemValues);
+        await pool.query(insertLibraryItemQuery, insertLibraryItemValues);
 
-        // Retorna o item da biblioteca inserido
+        // Em seguida, obtemos o número total de jogos na biblioteca do usuário
+        const countLibraryItemsQuery =
+            `
+            SELECT COUNT(*) AS total_games_added
+            FROM tb_user_library
+            WHERE user_id = $1;
+            `;
+        const countLibraryItemsValues = [userId];
+        const result = await pool.query(countLibraryItemsQuery, countLibraryItemsValues);
+
+        // Retorna o número total de jogos na biblioteca do usuário
         return result.rows[0];
     } catch (error) {
         throw new Error(`${error}`);
     }
 }
+
 
 export async function updateUserLibraryItem(itemId: number) {
     try {
