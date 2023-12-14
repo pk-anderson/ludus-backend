@@ -16,7 +16,7 @@ export async function saveUserLibraryItem(userId: number, gameId: number) {
             `
             SELECT COUNT(*) AS total_games_added
             FROM tb_user_library
-            WHERE user_id = $1;
+            WHERE user_id = $1 AND deleted_at IS NULL;
             `;
         const countLibraryItemsValues = [userId];
         const result = await pool.query(countLibraryItemsQuery, countLibraryItemsValues);
@@ -29,13 +29,23 @@ export async function saveUserLibraryItem(userId: number, gameId: number) {
 }
 
 
-export async function updateUserLibraryItem(itemId: number) {
+export async function updateUserLibraryItem(itemId: number, userId: number) {
     try {
         const updateLibraryItemQuery =
             'UPDATE tb_user_library SET updated_at = CURRENT_TIMESTAMP, deleted_at = NULL WHERE id = $1 RETURNING *';
-        const result = await pool.query(updateLibraryItemQuery, [itemId]);
+        await pool.query(updateLibraryItemQuery, [itemId]);
 
-        // Retorna o item da biblioteca atualizado
+        // Em seguida, obtemos o número total de jogos na biblioteca do usuário
+        const countLibraryItemsQuery =
+            `
+            SELECT COUNT(*) AS total_games_added
+            FROM tb_user_library
+            WHERE user_id = $1 AND deleted_at IS NULL;
+            `;
+        const countLibraryItemsValues = [userId];
+        const result = await pool.query(countLibraryItemsQuery, countLibraryItemsValues);
+
+        // Retorna o número total de jogos na biblioteca do usuário
         return result.rows[0];
     } catch (error) {
         throw new Error(`${error}`);

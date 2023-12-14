@@ -21,6 +21,16 @@ export async function updateFollowStatus(userId: number, followingId: number) {
     const updateFollowingValues = [userId, followingId];
     await pool.query(updateFollowingQuery, updateFollowingValues);
 
+    // Contagem total de usuários que este user está seguindo
+    const countFollowingQuery =
+    'SELECT COUNT(*) AS total_following FROM tb_followers WHERE user_id = $1 AND deleted_at IS NULL';
+    const countFollowingValues = [userId];
+    const result = await pool.query(countFollowingQuery, countFollowingValues);
+
+    return {
+        total: result.rows[0].total_following // Total de usuários que este user está seguindo
+    };
+
   } catch (error) {
     throw new Error(`${error}`);
   }
@@ -37,7 +47,7 @@ export async function followUser(userId: number, followingId: number) {
 
       // Contagem total de usuários que este user está seguindo
       const countFollowingQuery =
-          'SELECT COUNT(*) AS total_following FROM tb_followers WHERE user_id = $1';
+          'SELECT COUNT(*) AS total_following FROM tb_followers WHERE user_id = $1 AND deleted_at IS NULL';
       const countFollowingValues = [userId];
       const result = await pool.query(countFollowingQuery, countFollowingValues);
 

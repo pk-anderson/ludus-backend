@@ -21,7 +21,7 @@ import { CommentType } from '../interfaces/Comment';
             `
             SELECT COUNT(*) AS total_comments
             FROM tb_comments
-            WHERE user_id = $1;
+            WHERE user_id = $1 AND deleted_at IS NULL;
             `;
         const countCommentsValues = [comment.user_id];
         const commentCount = await pool.query(countCommentsQuery, countCommentsValues);

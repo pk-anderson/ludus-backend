@@ -46,7 +46,8 @@ export async function followService(userId: number, followingId: number) {
             const existingFollowing = isFollowing[0];
             if (existingFollowing.deleted_at) {
                 // Se o campo deleted_at estiver preenchido, atualizar para o momento do novo follow
-                await updateFollowStatus(userId, followingId)
+                const { total } = await updateFollowStatus(userId, followingId)
+                await checkFollowAchievement(userId, total)
             } else {
                 // Usuário já está sendo seguido
                 return { success: false, 
@@ -57,7 +58,6 @@ export async function followService(userId: number, followingId: number) {
         } else {          
                 // O usuário ainda não está seguindo o usuário alvo, então fazemos um novo follow
                 const { total } = await followUser(userId, followingId)
-                console.log(total)
                 await checkFollowAchievement(userId, total)
         }
 

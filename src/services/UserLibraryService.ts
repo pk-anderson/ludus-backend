@@ -23,7 +23,8 @@ import { checkGameLibraryAchievement } from "../achievements/Game";
             // Se o jogo está na biblioteca, verificar se está deletado
             if (libraryItem.deleted_at) {
                 // Se estiver deletado, restaurar o item na biblioteca
-                await updateUserLibraryItem(libraryItem.id);
+                const total = await updateUserLibraryItem(libraryItem.id, userId);
+                await checkGameLibraryAchievement(userId, total)
                 return { success: true, 
                     statusCode: 200,
                     message: UPDATE_TO_LIBRARY_SUCCESS,
