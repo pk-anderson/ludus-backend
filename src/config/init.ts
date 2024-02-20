@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import authRoutes from '../routes/AuthRoutes';
 import usersRoutes from '../routes/UserRoutes';
 import testRoutes from '../routes/TestRoutes';
@@ -13,9 +14,11 @@ import achievementRoutes from '../routes/AchievementRoutes'
 
 export function init() {
     const app = express();
+    app.use(cors());
 
     // Middleware para fazer o parse do corpo da requisição como JSON
     app.use(express.json());
+    
     // Utilizar a rota de teste
     app.use('/', testRoutes);
     // Utilizar as rotas relacionadas a autenticação

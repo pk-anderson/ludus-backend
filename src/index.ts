@@ -1,14 +1,12 @@
 import { connect } from './config/conn';
 import { init } from './config/init';
-import cors from 'cors';
 
 // Iniciar conexão
-const pool = connect()
+const pool = connect();
 // Iniciar app express
-const app = init()
-const PORT = 3000;
+const app = init();
 
-app.use(cors());
+const PORT = 3000;
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
