@@ -149,6 +149,7 @@ export async function findGameByIdService(userId: number, gameId: number) {
         // Se não estiver, realizar nova busca
         const twitchToken = await getTwitchAccessTokenOrFetch();
         let data: Game = await getGameById(twitchToken.access_token, gameId);
+        console.log(data)
 
         if (status) {
             // Adicionar o status ao jogo na resposta

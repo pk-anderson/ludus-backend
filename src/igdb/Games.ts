@@ -23,6 +23,13 @@ export async function listGamesByFilter(token: string, text: string, limit: numb
   
       if (response.ok) {
         const data: Game[] = await response.json();
+          
+            data.forEach(game => {
+                if (game.cover && game.cover.url) {
+                    game.cover.url = game.cover.url.replace('t_thumb', 't_cover_big');
+                }
+            });
+            return data;
         return data;
       } else {
         throw new Error(`${response.statusText}`);
@@ -51,6 +58,13 @@ export async function listGamesByFilter(token: string, text: string, limit: numb
   
       if (response.ok) {
         const data: Game[] = await response.json();
+            
+            data.forEach(game => {
+                if (game.cover && game.cover.url) {
+                    game.cover.url = game.cover.url.replace('t_thumb', 't_cover_big');
+                }
+            });
+            return data;
         return data;
       } else {
         throw new Error(`${response.statusText}`);
@@ -78,6 +92,13 @@ export async function listGamesByFilter(token: string, text: string, limit: numb
   
       if (response.ok) {
         const data: Game[] = await response.json();
+            // Modificando os URLs das capas
+            data.forEach(game => {
+                if (game.cover && game.cover.url) {
+                    game.cover.url = game.cover.url.replace('t_thumb', 't_cover_big');
+                }
+            });
+            return data;
         return data;
       } else {
         throw new Error(`${response.statusText}`);
@@ -104,8 +125,13 @@ export async function listGamesByFilter(token: string, text: string, limit: numb
             body: `fields name, cover.url, category, first_release_date, genres.name, player_perspectives.name, summary; where id = ${id};` 
           });
       if (response.ok) {
-        const data: Game = await response.json();
-        return data;
+        const data: Game[] = await response.json();
+            if (data.length === 1) {
+                if (data[0].cover && data[0].cover.url) {
+                    data[0].cover.url = data[0].cover.url.replace('t_thumb', 't_cover_big');
+                }
+              }
+            return data[0];
       } else {
         throw new Error(`${response.statusText}`);
       }
