@@ -95,13 +95,12 @@ export async function listByUserService(userId: number, entityType: CommentType,
     }
 }
 
-export async function listByEntityService(entityId: number, entityType: CommentType, orderBy: ListOrderBy) {
+export async function listByEntityService(entityId: number, entityType: CommentType, orderBy: ListOrderBy, page: number, limit: number) {
     try {
         if (entityType !== CommentType.GAME && entityType !== CommentType.POST ) {
           return { success: false, statusCode: 400, error: INVALID_TYPE_ERROR };
         }
-        const data: Comment[] = await listCommentsByEntityId(entityId, entityType, orderBy);
-
+        const data: Comment[] = await listCommentsByEntityId(entityId, entityType, orderBy, page, limit);
         return { success: true, statusCode: 200, data };
     } catch (error) {
         return { success: false, statusCode: 500, error: `${LIST_ENTITY_ERROR}:${error}` };

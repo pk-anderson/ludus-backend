@@ -114,9 +114,10 @@ export async function listCommentsByUserId(userId: number, entityType: CommentTy
 }
 
 // Listar todos os comentários de uma entidade (jogo ou post) com informações de usuário
-export async function listCommentsByEntityId(entityId: number, entityType: CommentType, orderBy: ListOrderBy) {
+export async function listCommentsByEntityId(entityId: number, entityType: CommentType, orderBy: ListOrderBy, page: number, limit: number) {
     try {
         const orderByClause = getCommentOrderClause(orderBy);
+        const offset = (page - 1) * limit;
 
         const getCommentsQuery = `
             SELECT c.*, u.username, u.email,
@@ -137,9 +138,10 @@ export async function listCommentsByEntityId(entityId: number, entityType: Comme
                 GROUP BY entity_id
             ) d ON c.id = d.entity_id
             WHERE c.entity_id = $1 AND c.entity_type = $2 AND c.deleted_at IS NULL
-            ${orderByClause}`;
+            ${orderByClause}
+            LIMIT $3 OFFSET $4`;
 
-        const result = await pool.query(getCommentsQuery, [entityId, entityType]);
+            const result = await pool.query(getCommentsQuery, [entityId, entityType, limit, offset]);
         return result.rows;
     } catch (error) {
         throw new Error(`${error}`);

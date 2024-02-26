@@ -91,8 +91,10 @@ export async function updateHandler(req: Request, res: Response) {
     try {
       const entityId = parseInt(req.params.entityId, 10);
       const orderBy: ListOrderBy = parseInt(req.query.order as string, 10) || 1;
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
       const commentType: CommentType = req.body.comment_type
-      const result = await listByEntityService(entityId, commentType, orderBy);
+      const result = await listByEntityService(entityId, commentType, orderBy, page, limit);
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.data);
