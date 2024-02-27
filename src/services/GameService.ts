@@ -29,8 +29,8 @@ async function getGameStatus(userId: number, gameId: number) {
 
 export async function listGamesService(text: string, limit: number, page: number) {
     try {
-        // Se houver filtro, verificar se busca está salva como cache
-        const cache = await getCache(`${text}-${limit}-${page}`)
+        // Se houver filtro, verificar se a busca está salva como cache
+        const cache = await getCache(`${text}-${limit}-${page}`);
         if (cache) {
             return {
                 success: true,
@@ -38,23 +38,22 @@ export async function listGamesService(text: string, limit: number, page: number
                 data: JSON.parse(cache)
             };
         }
-        // Se não estiver, realizar nova busca
+        // Se não estiver, realizar uma nova busca
         const twitchToken = await getTwitchAccessTokenOrFetch();
-        let data: Game[]
+        let data: { games: Game[], totalPages: number };
         if (text === undefined) {
             data = await listAllGames(twitchToken.access_token, limit, page);
         } else {
-            const filter = `"${text}"`;
-            data = await listGamesByFilter(twitchToken.access_token, filter, limit, page);
+            data = await listGamesByFilter(twitchToken.access_token, text, limit, page);
         }
 
         // Salvar nova busca como cache
-        await saveCache(`${text}-${limit}-${page}`, JSON.stringify(data));
+        await saveCache(`${text}-${limit}-${page}`, JSON.stringify(data.games));
 
         return {
             success: true,
             statusCode: 200,
-            data
+            data: data
         };
     } catch (error) {
         return {
@@ -64,6 +63,7 @@ export async function listGamesService(text: string, limit: number, page: number
         };
     }
 }
+
 
 
 export async function listGamesByStatusService(userId: number, status: StatusType) {
@@ -153,7 +153,6 @@ export async function findGameByIdService(userId: number, gameId: number) {
         // Se não estiver, realizar nova busca
         const twitchToken = await getTwitchAccessTokenOrFetch();
         let data: Game = await getGameById(twitchToken.access_token, gameId);
-        console.log(data)
 
         if (status) {
             // Adicionar o status ao jogo na resposta
