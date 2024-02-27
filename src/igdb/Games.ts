@@ -17,7 +17,7 @@ export async function listGamesByFilter(token: string, text: string, limit: numb
             'Client-ID': clientId,
             'Authorization': `Bearer ${token}`,
           },
-          body: `fields name, cover.url, category, first_release_date, genres.name, player_perspectives.name, summary; search ${text}; limit ${limit}; offset ${offset};` 
+          body: `fields name, cover.url, category, first_release_date, genres.name, player_perspectives.name, summary; search "${text}"; limit ${limit}; offset ${offset};` 
         });
 
     if (response.ok) {

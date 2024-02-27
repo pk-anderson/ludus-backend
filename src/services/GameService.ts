@@ -29,6 +29,7 @@ async function getGameStatus(userId: number, gameId: number) {
 
 export async function listGamesService(text: string, limit: number, page: number) {
     try {
+        
         // Se houver filtro, verificar se a busca está salva como cache
         const cache = await getCache(`${text}-${limit}-${page}`);
         if (cache) {
@@ -38,15 +39,17 @@ export async function listGamesService(text: string, limit: number, page: number
                 data: JSON.parse(cache)
             };
         }
+        
         // Se não estiver, realizar uma nova busca
         const twitchToken = await getTwitchAccessTokenOrFetch();
         let data: Game[]
         if (text === undefined) {
             data = await listAllGames(twitchToken.access_token, limit, page);
         } else {
+         
             data = await listGamesByFilter(twitchToken.access_token, text, limit, page);
         }
-
+        
         // Salvar nova busca como cache
         await saveCache(`${text}-${limit}-${page}`, JSON.stringify(data));
 
