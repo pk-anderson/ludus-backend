@@ -28,39 +28,43 @@ async function getGameStatus(userId: number, gameId: number) {
 }
 
 export async function listGamesService(text: string, limit: number, page: number) {
-    try { 
+    try {
         // Se houver filtro, verificar se busca está salva como cache
         const cache = await getCache(`${text}-${limit}-${page}`)
         if (cache) {
-            return { success: true, 
+            return {
+                success: true,
                 statusCode: 200,
                 data: JSON.parse(cache)
             };
         }
         // Se não estiver, realizar nova busca
-        const twitchToken = await getTwitchAccessTokenOrFetch()   
+        const twitchToken = await getTwitchAccessTokenOrFetch();
         let data: Game[]
         if (text === undefined) {
-            data = await listAllGames(twitchToken.access_token, limit, page)
+            data = await listAllGames(twitchToken.access_token, limit, page);
         } else {
-            const filter = `"${text}"`
-            data = await listGamesByFilter(twitchToken.access_token, filter, limit, page)
+            const filter = `"${text}"`;
+            data = await listGamesByFilter(twitchToken.access_token, filter, limit, page);
         }
-        
-        // Salvar nova busca como cache
-        await saveCache(`${text}-${limit}-${page}`, JSON.stringify(data))
 
-        return { success: true, 
-            statusCode: 200, 
+        // Salvar nova busca como cache
+        await saveCache(`${text}-${limit}-${page}`, JSON.stringify(data));
+
+        return {
+            success: true,
+            statusCode: 200,
             data
         };
     } catch (error) {
-        return { success: false, 
-            statusCode: 500, 
+        return {
+            success: false,
+            statusCode: 500,
             error: `${LIST_ENTITY_ERROR}:${error}`
-          };
+        };
     }
 }
+
 
 export async function listGamesByStatusService(userId: number, status: StatusType) {
     try { 

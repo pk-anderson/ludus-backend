@@ -30,7 +30,6 @@ export async function listGamesByFilter(token: string, text: string, limit: numb
                 }
             });
             return data;
-        return data;
       } else {
         throw new Error(`${response.statusText}`);
       }

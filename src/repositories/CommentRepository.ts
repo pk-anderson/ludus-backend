@@ -119,6 +119,17 @@ export async function listCommentsByEntityId(entityId: number, entityType: Comme
         const orderByClause = getCommentOrderClause(orderBy);
         const offset = (page - 1) * limit;
 
+        // Consulta para obter o número total de comentários
+        const countCommentsQuery = `
+            SELECT COUNT(*) AS total_comments 
+            FROM tb_comments 
+            WHERE entity_id = $1 AND entity_type = $2 AND deleted_at IS NULL`;
+        const countResult = await pool.query(countCommentsQuery, [entityId, entityType]);
+        const totalComments = parseInt(countResult.rows[0].total_comments);
+
+        // Calcular o número de páginas
+        const totalPages = Math.ceil(totalComments / limit);
+
         const getCommentsQuery = `
             SELECT c.*, u.username, u.email,
                    COALESCE(l.like_count, 0) AS like_count, 
@@ -141,12 +152,14 @@ export async function listCommentsByEntityId(entityId: number, entityType: Comme
             ${orderByClause}
             LIMIT $3 OFFSET $4`;
 
-            const result = await pool.query(getCommentsQuery, [entityId, entityType, limit, offset]);
-        return result.rows;
+        const result = await pool.query(getCommentsQuery, [entityId, entityType, limit, offset]);
+
+        return { comments: result.rows, totalPages };
     } catch (error) {
         throw new Error(`${error}`);
     }
 }
+
 
 // Deletar comentário
 export async function deleteComment(commentId: number) {

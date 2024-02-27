@@ -100,8 +100,8 @@ export async function listByEntityService(entityId: number, entityType: CommentT
         if (entityType !== CommentType.GAME && entityType !== CommentType.POST ) {
           return { success: false, statusCode: 400, error: INVALID_TYPE_ERROR };
         }
-        const data: Comment[] = await listCommentsByEntityId(entityId, entityType, orderBy, page, limit);
-        return { success: true, statusCode: 200, data };
+        const {comments, totalPages} = await listCommentsByEntityId(entityId, entityType, orderBy, page, limit);
+        return { success: true, statusCode: 200, comments, totalPages };
     } catch (error) {
         return { success: false, statusCode: 500, error: `${LIST_ENTITY_ERROR}:${error}` };
     }

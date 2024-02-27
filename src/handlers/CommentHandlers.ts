@@ -89,23 +89,27 @@ export async function updateHandler(req: Request, res: Response) {
 
   export async function listByEntityHandler(req: Request, res: Response) {
     try {
-      const entityId = parseInt(req.params.entityId, 10);
-      const orderBy: ListOrderBy = parseInt(req.query.order as string, 10) || 1;
-      const page = parseInt(req.query.page as string, 10) || 1;
-      const limit = parseInt(req.query.limit as string, 10) || 10;
-      const commentType = req.query.type as CommentType
-      const result = await listByEntityService(entityId, commentType, orderBy, page, limit);
-  
-      if (result.success) {
-        res.status(result.statusCode || 200).json(result.data);
-      } else {
-        res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
-      }
+        const entityId = parseInt(req.params.entityId, 10);
+        const orderBy: ListOrderBy = parseInt(req.query.order as string, 10) || 1;
+        const page = parseInt(req.query.page as string, 10) || 1;
+        const limit = parseInt(req.query.limit as string, 10) || 10;
+        const commentType = req.query.type as CommentType
+        const result = await listByEntityService(entityId, commentType, orderBy, page, limit);
+    
+        if (result.success) {
+            res.status(result.statusCode || 200).json({
+                comments: result.comments,
+                totalPages: result.totalPages
+            });
+        } else {
+            res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
+        }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
-      res.status(500).json({ message: INTERNAL_SERVER_ERROR });
+        // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+        res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
-  }
+}
+
 
   export async function likeCommentHandler(req: Request, res: Response) {
     try {
