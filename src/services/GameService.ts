@@ -40,7 +40,7 @@ export async function listGamesService(text: string, limit: number, page: number
         }
         // Se não estiver, realizar uma nova busca
         const twitchToken = await getTwitchAccessTokenOrFetch();
-        let data: { games: Game[], totalPages: number };
+        let data: Game[]
         if (text === undefined) {
             data = await listAllGames(twitchToken.access_token, limit, page);
         } else {
@@ -48,7 +48,7 @@ export async function listGamesService(text: string, limit: number, page: number
         }
 
         // Salvar nova busca como cache
-        await saveCache(`${text}-${limit}-${page}`, JSON.stringify(data.games));
+        await saveCache(`${text}-${limit}-${page}`, JSON.stringify(data));
 
         return {
             success: true,
