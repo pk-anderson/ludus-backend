@@ -29,35 +29,28 @@ async function getGameStatus(userId: number, gameId: number) {
 
 export async function listGamesService(text: string, limit: number, page: number) {
     try {
-        
+        let data: { games: Game[], totalPages: number };
         // Se houver filtro, verificar se a busca está salva como cache
         const cache = await getCache(`${text}-${limit}-${page}`);
         if (cache) {
+            data = JSON.parse(cache)
             return {
-                success: true,
-                statusCode: 200,
-                data: JSON.parse(cache)
-            };
+                success: true, statusCode: 200, games: data.games, totalPages: data.totalPages};
         }
         
         // Se não estiver, realizar uma nova busca
         const twitchToken = await getTwitchAccessTokenOrFetch();
-        let data: Game[]
         if (text === undefined) {
             data = await listAllGames(twitchToken.access_token, limit, page);
         } else {
          
             data = await listGamesByFilter(twitchToken.access_token, text, limit, page);
         }
-        
         // Salvar nova busca como cache
         await saveCache(`${text}-${limit}-${page}`, JSON.stringify(data));
 
         return {
-            success: true,
-            statusCode: 200,
-            data: data
-        };
+            success: true, statusCode: 200, games: data.games, totalPages: data.totalPages};
     } catch (error) {
         return {
             success: false,

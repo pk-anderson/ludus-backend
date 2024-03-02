@@ -70,8 +70,11 @@ export async function listHandler(req: Request, res: Response) {
       const result = await listGamesService(text, limit, page);
   
       if (result.success) {
-        res.status(result.statusCode || 200).json(result.data);
-      } else {
+        res.status(result.statusCode || 200).json({
+            games: result.games,
+            totalPages: result.totalPages
+        });
+    } else {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
