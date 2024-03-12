@@ -59,11 +59,9 @@ export async function createService(community: Community) {
 
   export async function listByUserService(userId: number, isActive: boolean) {
     try {
-      // Chama a função do repositório para verificar se usuário existe
       const userResult = await getUserById(userId); 
   
       if (!userResult || !userResult.is_active) {
-        // Nenhum usuário encontrado com o ID fornecido
         return { success: false, 
           statusCode: 404, 
           error: FIND_ENTITY_ERROR 
@@ -124,7 +122,6 @@ export async function createService(community: Community) {
         };
       }
 
-      // Atualizar apenas os campos informados e manter os demais inalterados
      communityUpdate = {
       ...communityUpdate,
       name: community.name || communityUpdate.name,

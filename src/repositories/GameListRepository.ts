@@ -1,8 +1,6 @@
 import { GameList, GameListItem } from './../interfaces/GameList';
 import { pool } from '../index';
 
-// Game List
-
 export async function saveGameList(gameList: GameList){
     try {
         const insertGameListQuery = `
@@ -100,8 +98,6 @@ export async function deleteGameList(listId: number) {
         throw new Error(`${error}`);
     }
 }
-
-// Game List Item
 
 export async function saveGameListItem(gameListItem: GameListItem) {
     try {

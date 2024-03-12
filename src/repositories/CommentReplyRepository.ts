@@ -8,7 +8,6 @@ export async function postReply(commentId: number, replyId: number) {
         const insertReplyValues = [commentId, replyId];
         const result = await pool.query(insertReplyQuery, insertReplyValues);
 
-        // Retorna a resposta (reply) inserida
         return result.rows[0];
     } catch (error) {
         throw new Error(`${error}`);

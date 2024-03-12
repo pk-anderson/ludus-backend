@@ -41,21 +41,17 @@ export async function likeService(
             return { success: false, statusCode: 404, error: FIND_ENTITY_ERROR};
         }
 
-        // Verificar se já existe like ou dislike
         const check = await checkLikeDislikeExists(userId, entityId, entityType);
         
         if (check) {
-            // Se já existir like, remover like e finalizar
             if (check.is_like === true) {
                 await removeLikeDislike(userId, entityId, entityType);
                 return { success: true, statusCode: 200, message: REMOVELIKE_SUCCESS };
             } else {
-                // Se já existir dislike, atualizar
                 await updateLikeDislike(check.id, true);
                 return { success: true, statusCode: 200, message: LIKE_SUCCESS };
             }
         }
-        // Se não existir like, criar novo
         await addLike(userId, entityId, entityType);
         return { success: true, statusCode: 200, message: LIKE_SUCCESS };
     } catch (error) {
@@ -83,15 +79,12 @@ export async function dislikeService(
             return { success: false, statusCode: 404, error: FIND_ENTITY_ERROR};
         }
 
-        // Verificar se já existe like ou dislike
         const check = await checkLikeDislikeExists(userId, entityId, entityType);
         if (check) {
-            // Se já existir dislike, remover e finalizar
             if (check.is_like === false) {
                 await removeLikeDislike(userId, entityId, entityType);
                 return { success: true, statusCode: 200, message: REMOVEDISLIKE_SUCCESS };
             } else {
-                // Se já existir like, atualizar para dislike
                 await updateLikeDislike(check.id, false);
                 return { success: true, statusCode: 200, message: DISLIKE_SUCCESS };
             }

@@ -27,7 +27,6 @@ import { convertByteaToBase64 } from '../utils/encryptor';
 
 export async function createCommunityPostService(post: CommunityPost) {
     try {
-        // verificar se usuário é membro da comunidade
         const isMember = await checkIfMemberExists(post.user_id, post.community_id)
         if (!isMember) {
             return {
@@ -107,8 +106,6 @@ export async function updateCommunityPostService(post: CommunityPost) {
 export async function listCommunityPostsByUser(userId: number, orderBy: ListOrderBy) {
     try {
         const result = await listCommunityPostsByUserId(userId, orderBy);
-
-        // Transforme o campo image de todos os usuários em URLs base64
         for (const item of result) {
             item.image = convertByteaToBase64(item.image);
         }
@@ -139,8 +136,6 @@ export async function getCommunityPostByIdService(postId: number): Promise<any> 
                 error: FIND_ENTITY_ERROR
             };
         }
-
-        // Transforme o campo image em uma URL base64
         post.image = convertByteaToBase64(post.image);
 
         const data: CommunityPostResponse = post
@@ -162,7 +157,6 @@ export async function listCommunityPostsByCommunity(communityId: number, orderBy
     try {
         const result = await listCommunityPostsByCommunityId(communityId, orderBy);
 
-        // Transforme o campo image de todos os usuários em URLs base64
         for (const item of result) {
             item.image = convertByteaToBase64(item.image);
         }

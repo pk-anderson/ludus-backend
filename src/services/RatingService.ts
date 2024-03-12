@@ -19,19 +19,15 @@ import {
 
 export async function saveService(rating: Rating) {
     try {
-        // Verifica se o usuário já possui uma avaliação para o jogo
         const existingRating = await getRatingByUserAndGame(rating.user_id, rating.game_id);
 
         if (existingRating) {
-            // Se o usuário já possui uma avaliação, atualiza a avaliação existente
            const updatedRating = await updateRating(existingRating.id, rating);
            return { success: true, 
                statusCode: 200,
                data: updatedRating
              };
         } 
-        
-        // Se o usuário não possui uma avaliação, cria uma nova avaliação
         const newRating = await saveRating(rating);
         return { success: true, 
             statusCode: 200,
@@ -51,13 +47,11 @@ export async function findService(userId: number, gameId: number) {
         const data: Rating = await getRatingByUserAndGame(userId, gameId);
 
         if (!data || data.deleted_at !== null) {
-            // Se não houver resultado ou a avaliação foi deletada, retorna um rating vazio
             return { success: true, 
                 statusCode: 200,
                 data: {} as Rating
               };
         } else {
-            // Se houver resultado válido, retorna a avaliação encontrada
             return { success: true, 
                 statusCode: 200,
                 data
@@ -76,13 +70,11 @@ export async function findByIdService(id: number) {
         const data: Rating = await getRatingById(id);
 
         if (!data || data.deleted_at !== null) {
-            // Se não houver resultado ou a avaliação foi deletada, retorna um rating vazio
             return { success: true, 
                 statusCode: 200,
                 data: {} as Rating
               };
         } else {
-            // Se houver resultado válido, retorna a avaliação encontrada
             return { success: true, 
                 statusCode: 200,
                 data

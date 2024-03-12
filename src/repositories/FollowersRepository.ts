@@ -13,22 +13,19 @@ export async function checkIfFollowingExists(userId: number, followingId: number
   }
 }
 
-// Função para atualizar o status de seguir um usuário
 export async function updateFollowStatus(userId: number, followingId: number) {
   try {
-    // Atualize o status de seguir um usuário 
     const updateFollowingQuery = 'UPDATE tb_followers SET deleted_at = NULL, updated_at = NOW() WHERE user_id = $1 AND following_id = $2';
     const updateFollowingValues = [userId, followingId];
     await pool.query(updateFollowingQuery, updateFollowingValues);
 
-    // Contagem total de usuários que este user está seguindo
     const countFollowingQuery =
     'SELECT COUNT(*) AS total_following FROM tb_followers WHERE user_id = $1 AND deleted_at IS NULL';
     const countFollowingValues = [userId];
     const result = await pool.query(countFollowingQuery, countFollowingValues);
 
     return {
-        total: result.rows[0].total_following // Total de usuários que este user está seguindo
+        total: result.rows[0].total_following 
     };
 
   } catch (error) {
@@ -36,34 +33,28 @@ export async function updateFollowStatus(userId: number, followingId: number) {
   }
 }
 
-// Seguir usuário
 export async function followUser(userId: number, followingId: number) {
   try {
-      // Seguir o usuário inserindo o relacionamento na tabela
       const insertFollowingQuery =
           'INSERT INTO tb_followers (user_id, following_id) VALUES ($1, $2) RETURNING *';
       const insertFollowingValues = [userId, followingId];
       await pool.query(insertFollowingQuery, insertFollowingValues);
 
-      // Contagem total de usuários que este user está seguindo
       const countFollowingQuery =
           'SELECT COUNT(*) AS total_following FROM tb_followers WHERE user_id = $1 AND deleted_at IS NULL';
       const countFollowingValues = [userId];
       const result = await pool.query(countFollowingQuery, countFollowingValues);
 
       return {
-          total: result.rows[0].total_following // Total de usuários que este user está seguindo
+          total: result.rows[0].total_following 
       };
   } catch (error) {
       throw new Error(`${error}`);
   }
 }
 
-
-// Listar seguidores de um usuário
 export async function listFollowers(userId: number) {
   try {
-    // Execute a consulta SQL para obter os seguidores do usuário
     const followersQuery = `
       SELECT 
         u.id,
@@ -88,10 +79,8 @@ export async function listFollowers(userId: number) {
   }
 }
 
-// Listar todos os usuários que um usuário está seguindo
 export async function listFollowing(userId: number) {
   try {
-    // Execute a consulta SQL para obter os usuários que o usuário está seguindo
     const followingQuery = `
       SELECT 
         u.id,
@@ -116,10 +105,8 @@ export async function listFollowing(userId: number) {
   }
 }
 
-// Deixar de seguir usuário
 export async function unfollowUser(userId: number, followingId: number) {
   try {
-    // Execute a consulta SQL para atualizar o campo deleted_at para o momento do unfollow
     const unfollowQuery = 'UPDATE tb_followers SET deleted_at = NOW() WHERE user_id = $1 AND following_id = $2';
     const unfollowValues = [userId, followingId];
     await pool.query(unfollowQuery, unfollowValues);

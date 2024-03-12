@@ -8,7 +8,6 @@ export async function saveStatus(status: GameStatus) {
         const insertStatusValues = [status.user_id, status.game_id, status.status];
         const result = await pool.query(insertStatusQuery, insertStatusValues);
 
-        // Retorna o status inserido
         return result.rows[0];
     } catch (error) {
         throw new Error(`${error}`);

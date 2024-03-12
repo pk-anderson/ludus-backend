@@ -14,7 +14,7 @@ import {
 } from '../handlers/CommunityPostHandlers'
 import multer from 'multer';
 
-const storage = multer.memoryStorage(); // Armazena os dados do arquivo em memória
+const storage = multer.memoryStorage(); 
 const upload = multer({ storage: storage });
 
 const router = express.Router();

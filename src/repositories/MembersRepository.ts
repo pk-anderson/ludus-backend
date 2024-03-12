@@ -2,7 +2,6 @@ import { pool } from '../index';
 
 export async function checkIfMemberExists(userId: number, communityId: number) {
   try {
-    // Verificar se o usuário já é um seguidor da comunidade
     const checkMemberQuery = 'SELECT * FROM tb_community_members WHERE user_id = $1 AND community_id = $2';
     const checkMemberValues = [userId, communityId];
     const existingMemberResult = await pool.query(checkMemberQuery, checkMemberValues);
@@ -27,7 +26,6 @@ export async function updateFollow(id: number) {
 
 export async function followCommunity(userId: number, communityId: number) {
     try {  
-      // Execute a consulta SQL para inserir o registro do membro na tabela tb_community_members
       const insertMemberQuery =
         'INSERT INTO tb_community_members (user_id, community_id) VALUES ($1, $2) RETURNING *';
       const insertMemberValues = [userId, communityId];
@@ -38,10 +36,8 @@ export async function followCommunity(userId: number, communityId: number) {
     }
   }
 
-// Listar todos os membros de uma comunidade
 export async function listMembers(communityId: number) {
     try {
-      // Consulta SQL para obter os membros da comunidade com suas informações de usuário associadas
       const listMembersQuery = `
       SELECT 
         cm.id as community_member_id,
@@ -70,7 +66,6 @@ export async function listMembers(communityId: number) {
 
   export async function unfollowCommunity(userId: number, communityId: number) {
     try { 
-       // Atualizar o campo 'deleted_at' para marcar o usuário como não mais membro da comunidade
       const leaveCommunityQuery = 'UPDATE tb_community_members SET deleted_at = NOW() WHERE user_id = $1 AND community_id = $2';
       const leaveCommunityValues = [userId, communityId];
       await pool.query(leaveCommunityQuery, leaveCommunityValues);

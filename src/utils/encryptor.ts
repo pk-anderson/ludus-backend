@@ -2,10 +2,7 @@ import bcrypt from 'bcryptjs';
 
 export async function encryptPassword(password: string): Promise<string> {
   try {
-    // Gerando o salt (custo 10 é o padrão)
     const salt = await bcrypt.genSalt(10);
-
-    // Gerando o hash da senha com o salt
     const hashedPassword = await bcrypt.hash(password, salt);
 
     return hashedPassword;
@@ -20,10 +17,8 @@ export async function comparePasswords(
 ): Promise<boolean> {
   try {
     if (!hashedPassword) {
-      // Caso a senha criptografada seja undefined, retornar false
       return false;
     }
-    // Comparando a senha com o hash armazenado
     const isMatch = await bcrypt.compare(password, hashedPassword);
 
     return isMatch;

@@ -84,7 +84,7 @@ export async function loginService(email: string, password: string) {
 
   export async function logoutService(sessionId: string) {
     try {
-      await logout(sessionId); // Chama a função do repositório para revogar o token
+      await logout(sessionId);
   
       return { success: true, 
         statusCode: 200, 

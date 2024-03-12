@@ -25,7 +25,6 @@ export async function createHandler(req: Request, res: Response) {
       post.user_id = req.decodedToken!.id
       const image = req.file;
       if (image) {
-        // Acesse os dados da imagem como bytes em userImage.buffer
         const imageBytes = image.buffer;
         post.image = imageBytes
       }
@@ -38,7 +37,7 @@ export async function createHandler(req: Request, res: Response) {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
@@ -55,7 +54,6 @@ export async function createHandler(req: Request, res: Response) {
         };
         const image = req.file;
       if (image) {
-        // Acesse os dados da imagem como bytes em userImage.buffer
         const imageBytes = image.buffer;
         post.image = imageBytes
       }
@@ -82,7 +80,7 @@ export async function getByIdHandler(req: Request, res: Response) {
             res.status(result.statusCode || 500).json({ message: 'Error: ' + result.error });
         }
     } catch (error) {
-        // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+        
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
@@ -145,7 +143,7 @@ export async function likePostHandler(req: Request, res: Response) {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
@@ -161,7 +159,7 @@ export async function likePostHandler(req: Request, res: Response) {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
@@ -177,7 +175,7 @@ export async function likePostHandler(req: Request, res: Response) {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
@@ -193,7 +191,7 @@ export async function likePostHandler(req: Request, res: Response) {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }

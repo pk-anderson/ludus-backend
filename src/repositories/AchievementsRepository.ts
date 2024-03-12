@@ -7,7 +7,6 @@ export async function unlockAchievement(userId: number, achievementId: number) {
         const insertAchievementValues = [userId, achievementId];
         const result = await pool.query(insertAchievementQuery, insertAchievementValues);
 
-        // Retorna o registro de conquista desbloqueada
         return result.rows[0];
     } catch (error) {
         throw new Error(`${error}`);
@@ -21,7 +20,6 @@ export async function userAchievementUnlocked(userId: number, achievementId: num
         const checkAchievementValues = [userId, achievementId];
         const result = await pool.query(checkAchievementQuery, checkAchievementValues);
 
-        // Retorna verdadeiro se o achievement estiver desbloqueado para o usuário, falso caso contrário
         return result.rows.length > 0;
     } catch (error) {
         throw new Error(`${error}`);
@@ -37,10 +35,8 @@ export async function listUserAchievements(userId: number) {
         const userAchievementsValues = [userId];
         const result = await pool.query(userAchievementsQuery, userAchievementsValues);
 
-        // Calcula a soma total de points_rewarded dos achievements desbloqueados
         const totalPoints = result.rows.reduce((acc, row) => acc + row.points_rewarded, 0);
 
-        // Retorna os achievements desbloqueados e a soma total de pontos
         return { achievements: result.rows, totalPoints };
     } catch (error) {
         throw new Error(`${error}`);

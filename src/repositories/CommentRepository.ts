@@ -3,10 +3,10 @@ import { Comment } from '../interfaces/Comment';
 import { ListOrderBy, getCommentOrderClause } from './../utils/listOrder';
 import { CommentType } from '../interfaces/Comment';
 
- // Função para inserir comentário na tabela tb_comments
+
  export async function postComment(comment: Comment, entityType: CommentType) {
     try {
-        // Inserção do comentário na tabela
+        
         const insertCommentQuery =
             `
             INSERT INTO tb_comments (user_id, entity_id, entity_type, content, created_at)
@@ -16,7 +16,7 @@ import { CommentType } from '../interfaces/Comment';
         const insertCommentValues = [comment.user_id, comment.entity_id, entityType, comment.content];
         const insertedComment = await pool.query(insertCommentQuery, insertCommentValues);
 
-        // Contagem total de comentários do usuário após a inserção do novo comentário
+        
         const countCommentsQuery =
             `
             SELECT COUNT(*) AS total_comments
@@ -27,8 +27,8 @@ import { CommentType } from '../interfaces/Comment';
         const commentCount = await pool.query(countCommentsQuery, countCommentsValues);
 
         return {
-            data: insertedComment.rows[0], // Comentário inserido
-            total: commentCount.rows[0].total_comments // Total de comentários do usuário
+            data: insertedComment.rows[0], 
+            total: commentCount.rows[0].total_comments 
         };
     } catch (error) {
         throw new Error(`${error}`);
@@ -36,21 +36,18 @@ import { CommentType } from '../interfaces/Comment';
 }
 
 
-// Atualizar conteúdo de comentário
 export async function updateComment(commentId: number, content: string) {
     try {
         const updateCommentQuery = 'UPDATE tb_comments SET content = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *';
         const updateCommentValues = [content, commentId];
         const result = await pool.query(updateCommentQuery, updateCommentValues);
 
-        // Retorna o comentário atualizado
         return result.rows[0];
     } catch (error) {
         throw new Error(`${error}`);
     }
 }
 
-// Obter um comentário específico pelo ID
 export async function getCommentById(commentId: number) {
     try {
         const getCommentQuery = `
@@ -80,7 +77,6 @@ export async function getCommentById(commentId: number) {
     }
 }
 
-// Listar todos os comentários de um usuário para uma entidade (jogo ou post)
 export async function listCommentsByUserId(userId: number, entityType: CommentType, orderBy: ListOrderBy = ListOrderBy.RECENT) {
     try {
         const orderByClause = getCommentOrderClause(orderBy);
@@ -113,13 +109,11 @@ export async function listCommentsByUserId(userId: number, entityType: CommentTy
     }
 }
 
-// Listar todos os comentários de uma entidade (jogo ou post) com informações de usuário
 export async function listCommentsByEntityId(entityId: number, entityType: CommentType, orderBy: ListOrderBy, page: number, limit: number) {
     try {
         const orderByClause = getCommentOrderClause(orderBy);
         const offset = (page - 1) * limit;
 
-        // Consulta para obter o número total de comentários
         const countCommentsQuery = `
             SELECT COUNT(*) AS total_comments 
             FROM tb_comments 
@@ -127,7 +121,6 @@ export async function listCommentsByEntityId(entityId: number, entityType: Comme
         const countResult = await pool.query(countCommentsQuery, [entityId, entityType]);
         const totalComments = parseInt(countResult.rows[0].total_comments);
 
-        // Calcular o número de páginas
         const totalPages = Math.ceil(totalComments / limit);
 
         const getCommentsQuery = `
@@ -160,15 +153,12 @@ export async function listCommentsByEntityId(entityId: number, entityType: Comme
     }
 }
 
-
-// Deletar comentário
 export async function deleteComment(commentId: number) {
     try {
-        // Executa a consulta SQL para atualizar o campo deleted_at para o momento atual
+       
         const deleteCommentQuery = 'UPDATE tb_comments SET deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *';
         const result = await pool.query(deleteCommentQuery, [commentId]);
 
-        // Retorna o comentário marcado como deletado
         return result.rows[0];
     } catch (error) {
         throw new Error(`${error}`);

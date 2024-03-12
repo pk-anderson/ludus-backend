@@ -18,7 +18,7 @@ export async function followHandler(req: Request, res: Response) {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
@@ -34,7 +34,7 @@ export async function followHandler(req: Request, res: Response) {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
@@ -52,7 +52,7 @@ export async function unfollowHandler(req: Request, res: Response) {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }

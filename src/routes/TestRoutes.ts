@@ -3,10 +3,8 @@ import { pool } from '../index';
 
 const router = express.Router();
 
-// Rota para testar a conexão com o banco de dados
 router.get('/', async (req, res) => {
   try {
-    // Executando uma query de teste
     const { rows } = await pool.query('SELECT NOW() as current_time');
     const currentTime = rows[0].current_time;
 

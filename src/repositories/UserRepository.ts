@@ -3,7 +3,6 @@ import { pool } from '../index';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// Função para verificar se o email já está sendo utilizado
 export async function checkIfEmailExists(email: string): Promise<boolean> {
   try {
   const existingUserQuery = 'SELECT * FROM tb_users WHERE email = $1';
@@ -19,7 +18,6 @@ export async function checkIfEmailExists(email: string): Promise<boolean> {
 
 export async function signup(user: User) {
   try {
-    // Insere o novo usuário no banco de dados
     const insertUserQuery =
       'INSERT INTO tb_users (username, email, password, profile_pic, bio) VALUES ($1, $2, $3, $4, $5) RETURNING *';
     const insertUserValues = [user.username, user.email, user.password, user.profile_pic, user.bio];
@@ -42,10 +40,8 @@ export async function getUserByEmail(email: string) {
   }
 }
 
-// Rota para listar os usuários cadastrados
 export async function listUsers() {
   try {
-    // Consultar todos os usuários no banco de dados
     const getUsersQuery = 'SELECT id, username, email, bio, created_at, updated_at, deleted_at, is_active, profile_pic FROM tb_users';
     const usersResult = await pool.query(getUsersQuery);
 
@@ -56,12 +52,48 @@ export async function listUsers() {
   }
 }
 
-// Rota para buscar um usuário por id
 export async function getUserById(userId: number) {
   try {
-
-    // Consultar o usuário no banco de dados pelo ID
-    const getUserQuery = 'SELECT id, username, email, bio, created_at, updated_at, deleted_at, is_active, profile_pic FROM tb_users WHERE id = $1';
+    const getUserQuery = `SELECT
+    u.id,
+    u.username,
+    u.email,
+    u.bio,
+    u.created_at,
+    u.updated_at,
+    u.deleted_at,
+    u.is_active,
+    u.profile_pic,
+    COALESCE(ua.total_points, 0) AS total_points, -- Total de pontos ganhos pelo usuário
+    ua.achievements -- Lista de achievements do usuário
+FROM
+    tb_users u
+LEFT JOIN (
+    -- Subconsulta para buscar os achievements do usuário e calcular o total de pontos
+    SELECT
+        user_id,
+        JSON_AGG(
+            JSON_BUILD_OBJECT(
+                'id', a.id,
+                'name', a.name,
+                'description', a.description,
+                'points_rewarded', a.points_rewarded,
+                'created_at', a.created_at,
+                'updated_at', a.updated_at,
+                'deleted_at', a.deleted_at,
+                'achieved_at', ua.achieved_at
+            )
+        ) AS achievements, -- Lista de achievements do usuário
+        COALESCE(SUM(a.points_rewarded), 0) AS total_points -- Total de pontos ganhos pelo usuário
+    FROM
+        tb_user_achievements ua
+    LEFT JOIN
+        tb_achievements a ON ua.achievement_id = a.id
+    GROUP BY
+        user_id
+) ua ON u.id = ua.user_id
+WHERE
+    u.id = $1;`;
     const getUserValues = [userId];
     const userResult = await pool.query(getUserQuery, getUserValues);
 
@@ -71,10 +103,8 @@ export async function getUserById(userId: number) {
   }
 }
 
-// Deletar usuário por id
 export async function deleteUserById(userId: number) {
   try {
-    // Deletar o usuário 
     const deleteUserQuery = 'UPDATE tb_users SET deleted_at = NOW(), is_active = false WHERE id = $1';
     const deleteUserValues = [userId];
     await pool.query(deleteUserQuery, deleteUserValues);
@@ -84,10 +114,8 @@ export async function deleteUserById(userId: number) {
   }
 }
 
-// Função para atualizar usuário
 export async function updateUserById(user: User) {
   try {
-    // Montar a query SQL de atualização dos dados do usuário
     const updateQuery = `
       UPDATE tb_users 
       SET username = $1, email = $2, profile_pic = $3, bio = $4, updated_at = $5
@@ -102,7 +130,6 @@ export async function updateUserById(user: User) {
       user.id,
     ];
 
-    // Executar a query SQL para atualizar os dados do usuário no banco de dados
     await pool.query(updateQuery, updateValues);
 
   } catch (error) {
@@ -110,10 +137,8 @@ export async function updateUserById(user: User) {
   }
 }
 
-// Reativar usuário
 export async function reactivateUser(userId: number) {
   try {
-    // Reativa a conta (atualiza os campos is_active, deleted_at e updated_at)
     const reactivateUserQuery =
       'UPDATE tb_users SET is_active = true, deleted_at = NULL, updated_at = NOW() WHERE id = $1';
     const reactivateUserValues = [userId];
@@ -124,10 +149,8 @@ export async function reactivateUser(userId: number) {
   }
 }
 
-// Função para atualizar a senha do usuário
 export async function updatePassword(userId: number, password: string) {
   try {
-    // Atualizar a senha no banco de dados
     const updatePasswordQuery = 'UPDATE tb_users SET password = $1 WHERE id = $2';
     const updatePasswordValues = [password, userId];
 

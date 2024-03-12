@@ -1,7 +1,6 @@
 import { pool } from '../index';
 import { EntityType } from '../interfaces/LikesDislikes';
 
-// Verificar se o usuário já deu like ou dislike
 export async function checkLikeDislikeExists(userId: number, entityId: number, entityType: EntityType) {
     try {
         const checkLikesQuery = 'SELECT * FROM tb_likes_dislikes WHERE user_id = $1 AND entity_id = $2 AND entity_type = $3';
@@ -13,7 +12,6 @@ export async function checkLikeDislikeExists(userId: number, entityId: number, e
     }
 }
 
-// Adicionar like
 export async function addLike(userId: number, entityId: number, entityType: EntityType) {
     try {
         const insertLikeQuery = 'INSERT INTO tb_likes_dislikes (user_id, entity_id, entity_type, is_like, created_at) VALUES ($1, $2, $3, true, CURRENT_TIMESTAMP) RETURNING id';
@@ -26,7 +24,6 @@ export async function addLike(userId: number, entityId: number, entityType: Enti
     }
 }
 
-// Adicionar dislike
 export async function addDislike(userId: number, entityId: number, entityType: EntityType) {
     try {
         const insertDislikeQuery = 'INSERT INTO tb_likes_dislikes (user_id, entity_id, entity_type, is_like, created_at) VALUES ($1, $2, $3, false, CURRENT_TIMESTAMP) RETURNING id';
@@ -44,13 +41,12 @@ export async function updateLikeDislike(id: number, isLike: boolean): Promise<bo
         const updateQuery = 'UPDATE tb_likes_dislikes SET is_like = $1 WHERE id = $2';
         const result = await pool.query(updateQuery, [isLike, id]);
 
-        return result.rowCount > 0; // Retorna true se a linha foi atualizada, caso contrário, false
+        return result.rowCount > 0; 
     } catch (error) {
         throw new Error(`${error}`);
     }
 }
 
-// Remover like ou dislike
 export async function removeLikeDislike(userId: number, entityId: number, entityType: EntityType) {
     try {
         const deleteLikeQuery = 'DELETE FROM tb_likes_dislikes WHERE user_id = $1 AND entity_id = $2 AND entity_type = $3';
@@ -61,18 +57,6 @@ export async function removeLikeDislike(userId: number, entityId: number, entity
     }
 }
 
-// // Remover dislike
-// export async function removeDislike(userId: number, entityId: number, entityType: EntityType) {
-//     try {
-//         const deleteDislikeQuery = 'DELETE FROM tb_likes_dislikes WHERE user_id = $1 AND entity_id = $2 AND entity_type = $3 AND is_like = false';
-//         const deleteDislikeValues = [userId, entityId, entityType];
-//         await pool.query(deleteDislikeQuery, deleteDislikeValues);
-//     } catch (error) {
-//         throw new Error(`${error}`);
-//     }
-// }
-
-// Buscar dados de todos os usuários que deram like em um comentário
 export async function listUsersWhoLikedEntity(entityId: number, entityType: EntityType) {
     try {
         const getUsersQuery = `
@@ -87,7 +71,6 @@ export async function listUsersWhoLikedEntity(entityId: number, entityType: Enti
     }
 }
 
-// Buscar dados de todos os usuários que deram dislike em um comentário
 export async function listUsersWhoDislikedEntity(entityId: number, entityType: EntityType) {
     try {
         const getUsersQuery = `

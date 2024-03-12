@@ -31,11 +31,11 @@ import {
     UPDATE_ENTITY_ERROR,
     FIND_ENTITY_ERROR
   } from '../utils/consts';
+  import { listGamesByLibrary } from './GameService';
   import { convertByteaToBase64 } from '../utils/encryptor';
 
   export async function signupService(user: User) {
     try {
-      // Verifica se todos os campos obrigatórios foram enviados
       if (!user.username || !user.email || !user.password) {
         return {
           success: false,
@@ -44,7 +44,6 @@ import {
         };
       }
   
-      // Verificar se a senha é válida
       if (!isValidPassword(user.password)) {
         return {
           success: false,
@@ -53,7 +52,6 @@ import {
         };
       }
   
-      // Verificar se o email é válido
       if (!isValidEmail(user.email)) {
         return {
           success: false,
@@ -71,7 +69,6 @@ import {
         };
       }
   
-      // Criptografa a senha antes de salvar no banco de dados
       const hashedPassword = await encryptPassword(user.password);
       user.password = hashedPassword;
   
@@ -97,9 +94,8 @@ import {
 
   export async function listService() {
     try {
-      const userResult = await listUsers(); // Chama a função do repositório para listar usuários
+      const userResult = await listUsers(); 
 
-      // Transforme o campo profile_pic de todos os usuários em URLs base64
       for (const item of userResult) {
           item.profile_pic = convertByteaToBase64(item.profile_pic);
       }
@@ -120,20 +116,28 @@ import {
 
   export async function findService(userId: number) {
     try {
-      const userResult = await getUserById(userId); // Chama a função do repositório para buscar usuário
+      const userResult = await getUserById(userId); 
   
       if (!userResult || !userResult.is_active) {
-        // Nenhum usuário encontrado com o ID fornecido
         return { success: false, 
           statusCode: 404, 
           error: FIND_ENTITY_ERROR 
         };
       }
-      // Transforme o campo profile_pic em uma URL base64
       userResult.profile_pic = convertByteaToBase64(userResult.profile_pic);
 
-      // Mapear o resultado para a interface de resposta
       const user: UserResponse = userResult;
+
+      const response = await listGamesByLibrary(userId)
+
+      if (response.success === false) {
+        return { success: false, 
+          statusCode: 500, 
+          error: `${FIND_ENTITY_ERROR}:${response.error}`
+        };
+      }
+
+      user.games = response.data
 
       return { success: true, 
         statusCode: 200, 
@@ -149,28 +153,23 @@ import {
 
   export async function profilePicService(userId: number) {
     try {
-      const userResult = await getUserById(userId); // Chama a função do repositório para buscar usuário
+      const userResult = await getUserById(userId); 
   
       if (!userResult || !userResult.is_active) {
-        // Nenhum usuário encontrado com o ID fornecido
         return { success: false, 
           statusCode: 404, 
           error: FIND_ENTITY_ERROR 
         };
       }
-      // Mapear o resultado para a interface de resposta
       const user: User = userResult;
 
       if (!user.profile_pic) {
-        // imagem de perfil não existe
         return { success: false, 
           statusCode: 404, 
           error: FIND_ENTITY_ERROR 
         };
       }
-      // Converter Uint8Array para base64
       const base64ImageData = Buffer.from(user.profile_pic).toString('base64');
-      // Criar a URL de dados
       const imgURL = `data:image/jpeg;base64,${base64ImageData}`;
 
       return { success: true, 
@@ -191,14 +190,13 @@ import {
     try {
       const userResult = await getUserById(userId)
       if (!userResult || !userResult.is_active) {
-        // Nenhum usuário encontrado com o ID fornecido
         return { success: false, 
           statusCode: 404, 
           error: FIND_ENTITY_ERROR 
         };
       }  
 
-      await deleteUserById(userId); // Chama a função do repositório para buscar usuário
+      await deleteUserById(userId); 
   
       return { success: true, 
         statusCode: 200, 
@@ -219,16 +217,12 @@ import {
     try {
       const userResult = await getUserById(user.id)
       if (!userResult || !userResult.is_active) {
-        // Nenhum usuário encontrado com o ID fornecido
         return { success: false, 
           statusCode: 404, 
           error: FIND_ENTITY_ERROR 
         };
       }
-      // Mapear o resultado para a interface de resposta
       const updatedUser: User = userResult;
-
-    // Verificar e modificar apenas os campos fornecidos no corpo da requisição
     if (user.username !== undefined) {
       updatedUser.username = user.username;
     }
@@ -262,7 +256,6 @@ import {
       updatedUser.bio = user.bio;
     }
 
-    // Incluir o campo 'updated_at' no objeto do usuário e adicionar a data atual como valor
     updatedUser.updated_at = new Date();
 
     await updateUserById(updatedUser)
@@ -286,17 +279,12 @@ import {
     try {
       const userResult = await getUserByEmail(email)
       if (!userResult || userResult.is_active) {
-        // Nenhum usuário encontrado com o ID fornecido
         return { success: false, 
           statusCode: 404, 
           error: FIND_ENTITY_ERROR 
         };
       }
-  
-      // Mapear o resultado para a interface de resposta
       const user: User = userResult;
-
-      // Compara a senha digitada com a senha criptografada armazenada no banco de dados
       const isPasswordMatch = await comparePasswords(password, user.password);
       if (!isPasswordMatch) {
         return { success: false, 
@@ -305,8 +293,7 @@ import {
         };
       }
 
-      await reactivateUser(user.id); // Chama a função do repositório para reativar usuário
-      // Autenticação bem-sucedida, gerar o token JWT
+      await reactivateUser(user.id); 
       const sessionId = generateSessionId();
       const tokenPayload = {
         id: user.id,
@@ -324,10 +311,8 @@ import {
       }
 
       const token = jwt.sign(tokenPayload, secretKey, {
-        expiresIn: '24h', // Define o tempo de expiração do token
+        expiresIn: '24h',
       });
-
-      // Salvar o token na tabela tb_access
       await createAccessToken(user.id, token, sessionId);
 
       return { success: true, 
@@ -348,7 +333,6 @@ import {
 
   export async function updatePasswordService(userId: number, password: string ) {
     try {
-      // Verificar se a senha é válida
       if (!isValidPassword(password)) {
         return {
           success: false,
@@ -357,10 +341,8 @@ import {
         };
       }
 
-      // Criptografar a nova senha
       const hashedPassword = await encryptPassword(password);
 
-      // Atualizar a senha do usuário
       await updatePassword(userId, hashedPassword);
 
       return { success: true, 

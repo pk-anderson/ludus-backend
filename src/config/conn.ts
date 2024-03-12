@@ -2,9 +2,8 @@ import { Pool } from 'pg';
 import dotenv from 'dotenv';
 
 export function connect() {
-  dotenv.config(); // Carregar variáveis de ambiente do arquivo .env
+  dotenv.config(); 
   
-  // Verificar se todas as variáveis de ambiente obrigatórias estão definidas
   const {
     DB_USER = '',
     DB_HOST = '',
@@ -13,7 +12,6 @@ export function connect() {
     DB_PORT = '5432',
   } = process.env;
 
-  // Configuração da conexão com o banco de dados
   const pool = new Pool({
     user: DB_USER,
     host: DB_HOST,

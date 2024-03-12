@@ -67,7 +67,6 @@ export async function followService(userId: number, communityId: number) {
 
   export async function listService(communityId: number) {
     try {
-        // Verificar se a comunidade existe
       const community: Community = await getCommunityById(communityId)
       if (!community) {
         return { success: false, 

@@ -22,7 +22,7 @@ import {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
@@ -39,7 +39,7 @@ import {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
@@ -55,7 +55,7 @@ import {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
@@ -71,7 +71,7 @@ import {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
@@ -87,7 +87,7 @@ import {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
@@ -104,7 +104,7 @@ import {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }

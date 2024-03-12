@@ -20,9 +20,7 @@ import { checkGameLibraryAchievement } from "../achievements/Game";
      try {
         const libraryItem = await getUserLibraryItemByUserAndGame(userId, gameId);
         if (libraryItem) {
-            // Se o jogo está na biblioteca, verificar se está deletado
             if (libraryItem.deleted_at) {
-                // Se estiver deletado, restaurar o item na biblioteca
                 const total = await updateUserLibraryItem(libraryItem.id, userId);
                 await checkGameLibraryAchievement(userId, total)
                 return { success: true, 
@@ -30,7 +28,6 @@ import { checkGameLibraryAchievement } from "../achievements/Game";
                     message: UPDATE_TO_LIBRARY_SUCCESS,
                   };
             } else {
-                // Se não estiver deletado, informar que o jogo já está na biblioteca
                 return { success: false, 
                     statusCode: 400,
                     error: ADD_TO_LIBRARY_ERROR,

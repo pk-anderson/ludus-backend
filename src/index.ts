@@ -1,9 +1,7 @@
 import { connect } from './config/conn';
 import { init } from './config/init';
 
-// Iniciar conexão
 const pool = connect();
-// Iniciar app express
 const app = init();
 
 const PORT = 3000;

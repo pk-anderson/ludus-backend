@@ -12,7 +12,6 @@ export async function saveCommunityPost(post: CommunityPost) {
         const insertPostValues = [post.user_id, post.community_id, post.content, post.image];
         const result = await pool.query(insertPostQuery, insertPostValues);
 
-        // Retorna o post inserido
         return result.rows[0];
     } catch (error) {
         throw new Error(`${error}`);
@@ -30,7 +29,6 @@ export async function updateCommunityPost(post: CommunityPost) {
         const updatePostValues = [post.id, post.content, post.image];
         const result = await pool.query(updatePostQuery, updatePostValues);
 
-        // Retorna a postagem atualizada
         return result.rows[0];
     } catch (error) {
         throw new Error(`${error}`);
@@ -47,7 +45,6 @@ export async function deleteCommunityPost(postId: number) {
 
         const result = await pool.query(deletePostQuery, [postId]);
 
-        // Retorna a postagem deletada
         return result.rows[0];
     } catch (error) {
         throw new Error(`${error}`);
@@ -77,7 +74,6 @@ export async function getCommunityPostById(postId: number) {
 
         const result = await pool.query(getPostQuery, [postId]);
 
-        // Retorna o post de comunidade encontrado por ID
         return result.rows[0];
     } catch (error) {
         throw new Error(`${error}`);
@@ -109,7 +105,6 @@ export async function listCommunityPostsByUserId(userId: number, orderBy: ListOr
 
         const result = await pool.query(getPostsQuery, [userId]);
 
-        // Retorna a lista de posts de comunidade do usuário
         return result.rows;
     } catch (error) {
         throw new Error(`${error}`);
@@ -141,7 +136,6 @@ export async function listCommunityPostsByCommunityId(communityId: number, order
 
         const result = await pool.query(getPostsQuery, [communityId]);
 
-        // Retorna a lista de posts de comunidade da comunidade
         return result.rows;
     } catch (error) {
         throw new Error(`${error}`);

@@ -30,7 +30,6 @@ async function getGameStatus(userId: number, gameId: number) {
 export async function listGamesService(text: string, limit: number, page: number) {
     try {
         let data: { games: Game[], totalPages: number };
-        // Se houver filtro, verificar se a busca está salva como cache
         const cache = await getCache(`${text}-${limit}-${page}`);
         if (cache) {
             data = JSON.parse(cache)
@@ -38,7 +37,6 @@ export async function listGamesService(text: string, limit: number, page: number
                 success: true, statusCode: 200, games: data.games, totalPages: data.totalPages};
         }
         
-        // Se não estiver, realizar uma nova busca
         const twitchToken = await getTwitchAccessTokenOrFetch();
         if (text === undefined) {
             data = await listAllGames(twitchToken.access_token, limit, page);
@@ -46,7 +44,6 @@ export async function listGamesService(text: string, limit: number, page: number
          
             data = await listGamesByFilter(twitchToken.access_token, text, limit, page);
         }
-        // Salvar nova busca como cache
         await saveCache(`${text}-${limit}-${page}`, JSON.stringify(data));
 
         return {
@@ -66,7 +63,6 @@ export async function listGamesByStatusService(userId: number, status: StatusTyp
     try { 
         const gameIds = await listStatusByUserAndType(userId, status)
         
-        // Verificar se busca está salva como cache
         const cache = await getCache(`${userId}-${gameIds}`)
         if (cache) {
             return { success: true, 
@@ -74,14 +70,12 @@ export async function listGamesByStatusService(userId: number, status: StatusTyp
                 data: JSON.parse(cache)
             };
         }
-        // Se não estiver, realizar nova busca
         const twitchToken = await getTwitchAccessTokenOrFetch()   
         let data: Game[] = []
         if (gameIds !== '') {
             data = await listGamesByGameIds(twitchToken.access_token, gameIds)
         }
 
-        // Salvar nova busca como cache
         await saveCache(`${userId}-${gameIds}`, JSON.stringify(data))
 
         return { success: true, 
@@ -99,7 +93,6 @@ export async function listGamesByStatusService(userId: number, status: StatusTyp
 export async function listGamesByLibrary(userId: number) {
     try {
         const gameIds = await listUserLibrary(userId)
-        // Verificar se busca está salva como cache
         const cache = await getCache(`${userId}-${gameIds}`)
         if (cache) {
             return { success: true, 
@@ -107,7 +100,6 @@ export async function listGamesByLibrary(userId: number) {
                 data: JSON.parse(cache)
             };
         }
-        // Se não estiver, realizar nova busca
         const twitchToken = await getTwitchAccessTokenOrFetch()   
         
         let data: Game[] = []
@@ -115,7 +107,6 @@ export async function listGamesByLibrary(userId: number) {
             data = await listGamesByGameIds(twitchToken.access_token, gameIds)
         }
 
-        // Salvar nova busca como cache
         await saveCache(`${userId}-${gameIds}`, JSON.stringify(data))
 
         return { success: true, 
@@ -133,8 +124,6 @@ export async function listGamesByLibrary(userId: number) {
 export async function findGameByIdService(userId: number, gameId: number) {
     try {
         const status = await getGameStatus(userId, gameId);
-
-        // Verificar se busca está salva como cache
         const cacheKey = `${gameId}-${status?.status || StatusType.NO_STATUS}`;
         const cache = await getCache(cacheKey);
 
@@ -146,19 +135,15 @@ export async function findGameByIdService(userId: number, gameId: number) {
             };
         }
 
-        // Se não estiver, realizar nova busca
         const twitchToken = await getTwitchAccessTokenOrFetch();
         let data: Game = await getGameById(twitchToken.access_token, gameId);
 
         if (status) {
-            // Adicionar o status ao jogo na resposta
             data = {
                 ...data,
                 status: status?.status || StatusType.NO_STATUS,
             };
         }
-
-        // Salvar nova busca em cache
         await saveCache(cacheKey, JSON.stringify(data));
 
         return {

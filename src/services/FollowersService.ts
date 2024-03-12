@@ -32,31 +32,25 @@ export async function followService(userId: number, followingId: number) {
 
         const userResult =  await getUserById(followingId)
         if (!userResult || !userResult.is_active) {
-            // Nenhum usuário encontrado com o ID fornecido
             return { success: false, 
                 statusCode: 404, 
                 error: FIND_ENTITY_ERROR 
             };
         }
 
-        // Verificar se usuário já está seguindo este usuário
         const isFollowing = await checkIfFollowingExists(userId, followingId)
         if (isFollowing.length > 0) {
-            // O usuário já está seguindo o usuário alvo
             const existingFollowing = isFollowing[0];
             if (existingFollowing.deleted_at) {
-                // Se o campo deleted_at estiver preenchido, atualizar para o momento do novo follow
                 const { total } = await updateFollowStatus(userId, followingId)
                 await checkFollowAchievement(userId, total)
             } else {
-                // Usuário já está sendo seguido
                 return { success: false, 
                     statusCode: 400, 
                     error: ALREADY_FOLLOWING 
                 };
             }
         } else {          
-                // O usuário ainda não está seguindo o usuário alvo, então fazemos um novo follow
                 const { total } = await followUser(userId, followingId)
                 await checkFollowAchievement(userId, total)
         }
@@ -79,14 +73,11 @@ export async function followService(userId: number, followingId: number) {
     try {
       const userResult =  await getUserById(followingId)
       if (!userResult || !userResult.is_active) {
-          // Nenhum usuário encontrado com o ID fornecido
           return { success: false, 
             statusCode: 404, 
             error: FIND_ENTITY_ERROR 
           };
       }
-
-      // Verificar se usuário já está seguindo este usuário
       const isFollowing = await checkIfFollowingExists(userId, followingId)
       if (isFollowing.length === 0) {
         return { success: false, 
@@ -100,7 +91,6 @@ export async function followService(userId: number, followingId: number) {
             error: NOT_FOLLOWING 
           };
       } else {
-        // O usuário está seguindo o usuário alvo, realizar unfollow
         await unfollowUser(userId, followingId)
       }
      
@@ -122,7 +112,6 @@ export async function followService(userId: number, followingId: number) {
     try {
         const userResult =  await getUserById(userId)
       if (!userResult || !userResult.is_active) {
-          // Nenhum usuário encontrado com o ID fornecido
           return { success: false, 
             statusCode: 404, 
             error: FIND_ENTITY_ERROR 
@@ -130,8 +119,6 @@ export async function followService(userId: number, followingId: number) {
       }
 
       const result = await listFollowers(userId)
-
-      // Transforme o campo profile_pic de todos os usuários em URLs base64
       for (const item of result) {
         item.profile_pic = convertByteaToBase64(item.profile_pic);
       }
@@ -154,7 +141,6 @@ export async function followService(userId: number, followingId: number) {
     try {
         const userResult =  await getUserById(userId)
       if (!userResult || !userResult.is_active) {
-          // Nenhum usuário encontrado com o ID fornecido
           return { success: false, 
             statusCode: 404, 
             error: FIND_ENTITY_ERROR 
@@ -163,7 +149,6 @@ export async function followService(userId: number, followingId: number) {
 
       const result = await listFollowing(userId)
 
-      // Transforme o campo profile_pic de todos os usuários em URLs base64
       for (const item of result) {
         item.profile_pic = convertByteaToBase64(item.profile_pic);
       }

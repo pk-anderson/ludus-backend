@@ -25,7 +25,7 @@ export async function addGameHandler(req: Request, res: Response) {
       res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
     }
   } catch (error) {
-    // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+    
     res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 }
@@ -41,7 +41,7 @@ export async function removeGameHandler(req: Request, res: Response) {
       res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
     }
   } catch (error) {
-    // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+    
     res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 }
@@ -57,7 +57,7 @@ export async function listUserLibraryHandler(req: Request, res: Response) {
       res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
     }
   } catch (error) {
-    // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+    
     res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 }
@@ -78,7 +78,7 @@ export async function listHandler(req: Request, res: Response) {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
@@ -94,7 +94,7 @@ export async function listHandler(req: Request, res: Response) {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
@@ -110,7 +110,7 @@ export async function listHandler(req: Request, res: Response) {
         res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
       }
     } catch (error) {
-      // Em caso de exceção não tratada, envie uma resposta de erro de servidor
+      
       res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }

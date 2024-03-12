@@ -15,8 +15,6 @@ import achievementRoutes from '../routes/AchievementRoutes'
 export function init() {
     const app = express();
     app.use(cors());
-
-    // Middleware para fazer o parse do corpo da requisição como JSON
     app.use(express.json());
     
     // Utilizar a rota de teste
@@ -42,6 +40,5 @@ export function init() {
     // Utilizar as rotas relacionadas às conquistas
     app.use('/achievements', achievementRoutes);
 
-    //return
     return app
   }

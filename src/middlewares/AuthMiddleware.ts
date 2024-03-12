@@ -10,7 +10,6 @@ interface TokenPayload {
   exp: number;
 }
 
-// Estendendo a interface Request para incluir a propriedade decodedToken
 declare global {
   namespace Express {
     interface Request {
@@ -29,26 +28,22 @@ export async function validateToken(req: Request, res: Response, next: NextFunct
 
   try {
     const decodedToken = jwt.verify(token, secretKey) as TokenPayload;
-    // Verificar se o token está revogado
     const checkRevokedQuery = 'SELECT * FROM tb_access WHERE access_token = $1 AND revoked = true';
     const checkRevokedValues = [token];
     const checkRevokedResult = await pool.query(checkRevokedQuery, checkRevokedValues);
   
     if (checkRevokedResult.rows.length > 0) {
-      // Token foi revogado, não é válido
       return res.status(401).json({ message: 'Token revogado. Acesso não autorizado.' });
     }
   
-    // Verificar se o token expirou
     const currentTimeInSeconds = Math.floor(Date.now() / 1000);
     if (decodedToken.exp && decodedToken.exp < currentTimeInSeconds) {
-      // Token expirado, retorno 401 Unauthorized
       return res.status(401).json({ message: 'Token expirado. Acesso não autorizado.' });
     }
   
-    req.decodedToken = decodedToken; // Adiciona o payload decodificado ao objeto req
+    req.decodedToken = decodedToken; 
   
-    next(); // Continua o fluxo da requisição para a próxima função
+    next(); 
   } catch (error) {
     return res.status(401).json({ message: `Acesso não autorizado: ${error}` });
   }

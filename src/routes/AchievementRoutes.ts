@@ -6,7 +6,6 @@ import {
 
 const router = express.Router();
 
-// Rota para listar as conquistas de um usuário
 router.get('/list/:userId', validateToken, listAllHandler);
 
 export default router;

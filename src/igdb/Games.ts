@@ -29,7 +29,6 @@ export async function listGamesByFilter(token: string, text: string, limit: numb
           }
       });
 
-      // Calcula o número total de páginas com base na contagem de jogos retornados
       const totalPages = Math.ceil(parseInt(response.headers.get('X-Count') || '0', 10) / limit);
       
       return { games: gamesData, totalPages: totalPages };
@@ -108,7 +107,6 @@ export async function listAllGames(token: string, limit: number, page: number): 
   
       if (response.ok) {
         const data: Game[] = await response.json();
-            // Modificando os URLs das capas
             data.forEach(game => {
                 if (game.cover && game.cover.url) {
                     game.cover.url = game.cover.url.replace('t_thumb', 't_cover_big');
