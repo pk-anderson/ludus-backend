@@ -124,7 +124,7 @@ export async function listCommentsByEntityId(entityId: number, entityType: Comme
         const totalPages = Math.ceil(totalComments / limit);
 
         const getCommentsQuery = `
-            SELECT c.*, u.username, u.email,
+            SELECT c.*, u.username, u.email, u.profile_pic,
                    COALESCE(l.like_count, 0) AS like_count, 
                    COALESCE(d.dislike_count, 0) AS dislike_count 
             FROM tb_comments c

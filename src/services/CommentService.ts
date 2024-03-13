@@ -28,6 +28,7 @@ import {
     NO_CONTENT_ERROR,
     INVALID_TYPE_ERROR
 } from "../utils/consts";
+import { convertByteaToBase64 } from '../utils/encryptor';
 
 export async function createService(comment: Comment, entityType: CommentType) {
     try {
@@ -101,6 +102,9 @@ export async function listByEntityService(entityId: number, entityType: CommentT
           return { success: false, statusCode: 400, error: INVALID_TYPE_ERROR };
         }
         const {comments, totalPages} = await listCommentsByEntityId(entityId, entityType, orderBy, page, limit);
+        for (const item of comments) {
+            item.profile_pic = convertByteaToBase64(item.profile_pic);
+        }
         return { success: true, statusCode: 200, comments, totalPages };
     } catch (error) {
         return { success: false, statusCode: 500, error: `${LIST_ENTITY_ERROR}:${error}` };
