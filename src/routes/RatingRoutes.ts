@@ -7,6 +7,7 @@ import {
     listByGameHandler,
     listByUserHandler,
     deleteHandler,
+    deleteByUserAndGameHandler
  } from '../handlers/RatingHandlers';
 
  const router = express.Router();
@@ -28,6 +29,9 @@ import {
 
  // Rota para remover avaliação
  router.delete('/:id', validateToken, deleteHandler);
+
+  // Rota para remover avaliação por id do jogo
+  router.delete('/game/:id', validateToken, deleteByUserAndGameHandler);
 
  export default router;
  

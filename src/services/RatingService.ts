@@ -6,7 +6,8 @@ import {
     getRatingById,
     getRatingsByUser,
     getRatingsByGame,
-    deleteRating
+    deleteRating,
+    deleteRatingByUserAndGame
  } from "../repositories/RatingRepository";
  import { 
      CREATE_ENTITY_ERROR,
@@ -151,3 +152,36 @@ export async function deleteService(id: number, userId: number) {
           };
     }
 }
+
+export async function deleteByUserAndGameService(userId: number, gameId: number) {
+    try {
+        const rating: Rating = await getRatingByUserAndGame(userId, gameId)
+
+      if (!rating || rating.deleted_at !== null) {
+        return { success: false, 
+          statusCode: 404, 
+          error: FIND_ENTITY_ERROR
+        };
+      }
+      if (rating.user_id !== userId ) {
+        return { success: false, 
+          statusCode: 403, 
+          error: UNAUTHORIZED_ACCESS
+        };
+      }
+
+      await deleteRatingByUserAndGame(userId, gameId);
+
+      return { success: true, 
+          statusCode: 200,
+          message: DELETE_RATING_SUCCESS,
+        };
+
+    } catch (error) {
+        return { success: false, 
+            statusCode: 500, 
+            error: `${DELETE_ENTITY_ERROR}:${error}`
+          };
+    }
+}
+

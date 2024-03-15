@@ -36,12 +36,12 @@ export async function gameDetails(userId: number, gameId: number) {
             (
                 SELECT status
                 FROM tb_status
-                WHERE user_id = $1 AND game_id = $2
+                WHERE user_id = $1 AND game_id = $2 AND deleted_at IS NULL
             ) AS status,
             (
                 SELECT rating
                 FROM tb_ratings
-                WHERE user_id = $1 AND game_id = $2
+                WHERE user_id = $1 AND game_id = $2 AND deleted_at IS NULL
             ) AS rating
         `;
 

@@ -7,7 +7,8 @@ import {
     findByIdService,
     listByUserService,
     listByGameService,
-    deleteService
+    deleteService,
+    deleteByUserAndGameService
  } from '../services/RatingService';
 
  export async function saveHandler(req: Request, res: Response) {
@@ -97,6 +98,23 @@ import {
       const id = parseInt(req.params.id, 10);
       const userId = req.decodedToken!.id
       const result = await deleteService(id, userId)
+  
+      if (result.success) {
+        res.status(result.statusCode || 200).json(result.message);
+      } else {
+        res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
+      }
+    } catch (error) {
+      
+      res.status(500).json({ message: INTERNAL_SERVER_ERROR });
+    }
+  }
+
+  export async function deleteByUserAndGameHandler(req: Request, res: Response) {
+    try {   
+      const gameId = parseInt(req.params.id, 10);
+      const userId = req.decodedToken!.id
+      const result = await deleteByUserAndGameService(userId, gameId)
   
       if (result.success) {
         res.status(result.statusCode || 200).json(result.message);

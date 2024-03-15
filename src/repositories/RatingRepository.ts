@@ -82,3 +82,14 @@ export async function deleteRating(ratingId: number) {
         throw new Error(`${error}`);
     }
 }
+
+export async function deleteRatingByUserAndGame(userId: number, gameId: number) {
+    try {
+        const deleteRatingQuery = 'UPDATE tb_ratings SET deleted_at = CURRENT_TIMESTAMP WHERE user_id = $1 AND game_id = $2 RETURNING *';
+        const result = await pool.query(deleteRatingQuery, [userId, gameId]);
+        
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(`${error}`);
+    }
+}
