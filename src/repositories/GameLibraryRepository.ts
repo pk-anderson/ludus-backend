@@ -25,6 +25,34 @@ export async function saveUserLibraryItem(userId: number, gameId: number) {
     }
 }
 
+export async function gameDetails(userId: number, gameId: number) {
+    try {
+        const checkGameQuery = `
+            SELECT EXISTS (
+                SELECT 1
+                FROM tb_user_library
+                WHERE user_id = $1 AND game_id = $2 AND deleted_at IS NULL
+            ) AS game_in_library,
+            (
+                SELECT status
+                FROM tb_status
+                WHERE user_id = $1 AND game_id = $2
+            ) AS status,
+            (
+                SELECT rating
+                FROM tb_ratings
+                WHERE user_id = $1 AND game_id = $2
+            ) AS rating
+        `;
+
+        const result = await pool.query(checkGameQuery, [userId, gameId]);
+        const { game_in_library, status, rating } = result.rows[0];
+        return { game_in_library, status, rating };
+    } catch (error) {
+        throw new Error(`${error}`);
+    }
+}
+
 
 export async function updateUserLibraryItem(itemId: number, userId: number) {
     try {

@@ -15,7 +15,10 @@ import {
     getGameById,
     listGamesByGameIds
  } from "../igdb/Games";
-import { listUserLibrary } from '../repositories/GameLibraryRepository';
+import { 
+    listUserLibrary,
+    gameDetails,
+ } from '../repositories/GameLibraryRepository';
 import { 
     LIST_ENTITY_ERROR,
     FIND_ENTITY_ERROR
@@ -159,3 +162,29 @@ export async function findGameByIdService(userId: number, gameId: number) {
         };
     }
 }
+
+export async function findGameDetails(userId: number, gameId: number) {
+    try {
+        let { game_in_library, status, rating } = await gameDetails(userId, gameId);
+        if (!(status in StatusType)) {
+            status = StatusType.NO_STATUS; 
+        }
+
+        return {
+            success: true,
+            statusCode: 200,
+            data: {
+                game_in_library,
+                status,
+                rating
+            },
+        };
+    } catch (error) {
+        return {
+            success: false,
+            statusCode: 500,
+            error: `${FIND_ENTITY_ERROR}:${error}`,
+        };
+    }
+}
+

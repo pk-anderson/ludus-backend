@@ -6,7 +6,8 @@ import {
     listUserLibraryHandler,
     listHandler,
     findHandler,
-    listByStatusHandler
+    listByStatusHandler,
+    getGameDetailsHandler
  } from '../handlers/GamesHandler';
 import { 
     createHandler,
@@ -28,6 +29,9 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
  const router = express.Router();
+
+ // Detalhes de jogo
+ router.get('/details/:id', validateToken, getGameDetailsHandler);
 
  //ROTAS BÁSICAS PARA JOGOS
 

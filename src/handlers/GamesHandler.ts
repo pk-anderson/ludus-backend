@@ -4,7 +4,8 @@ import {
     listGamesService,
     findGameByIdService,
     listGamesByStatusService,
-    listGamesByLibrary
+    listGamesByLibrary,
+    findGameDetails
  } from "../services/GameService";
 import { 
   addUserLibraryItem,
@@ -21,6 +22,22 @@ export async function addGameHandler(req: Request, res: Response) {
 
     if (result.success) {
       res.status(result.statusCode || 200).json(result.message);
+    } else {
+      res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
+    }
+  } catch (error) {
+    
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
+  }
+}
+
+export async function getGameDetailsHandler(req: Request, res: Response) {
+  try {
+    const gameId = parseInt(req.params.id, 10);
+    const result = await findGameDetails(req.decodedToken!.id, gameId);
+
+    if (result.success) {
+      res.status(result.statusCode || 200).json(result.data);
     } else {
       res.status(result.statusCode || 500).json({ message: 'Erro: ' + result.error });
     }
