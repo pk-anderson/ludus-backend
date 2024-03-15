@@ -120,9 +120,10 @@ export async function getUserLibraryById(itemId: number) {
 export async function listUserLibrary(userId: number) {
     try {
         const listLibraryQuery = `
-            SELECT game_id
-            FROM tb_user_library
-            WHERE user_id = $1 AND deleted_at IS NULL
+        SELECT game_id
+        FROM tb_user_library
+        WHERE user_id = $1 AND deleted_at IS NULL
+        ORDER BY COALESCE(updated_at, created_at) DESC        
         `;
 
         const result = await pool.query(listLibraryQuery, [userId]);

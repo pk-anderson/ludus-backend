@@ -95,34 +95,40 @@ export async function listGamesByStatusService(userId: number, status: StatusTyp
 
 export async function listGamesByLibrary(userId: number) {
     try {
-        const gameIds = await listUserLibrary(userId)
-        const cache = await getCache(`${userId}-${gameIds}`)
+        const gameIds = await listUserLibrary(userId);
+        const cache = await getCache(`${userId}-${gameIds}`);
         if (cache) {
-            return { success: true, 
+            return {
+                success: true,
                 statusCode: 200,
-                data: JSON.parse(cache)
+                data: JSON.parse(cache),
             };
         }
-        const twitchToken = await getTwitchAccessTokenOrFetch()   
+        const twitchToken = await getTwitchAccessTokenOrFetch();
         
-        let data: Game[] = []
+        let data: (Game | undefined)[] = [];
         if (gameIds !== '') {
-            data = await listGamesByGameIds(twitchToken.access_token, gameIds)
+            const games = await listGamesByGameIds(twitchToken.access_token, gameIds);
+            data = gameIds.split(',').map((gameId) => games.find((game) => game.id === parseInt(gameId.trim())));
+            data = data.filter((game) => game !== undefined);
         }
 
-        await saveCache(`${userId}-${gameIds}`, JSON.stringify(data))
+        await saveCache(`${userId}-${gameIds}`, JSON.stringify(data));
 
-        return { success: true, 
-            statusCode: 200, 
-            data
+        return {
+            success: true,
+            statusCode: 200,
+            data: data as Game[], 
         };
     } catch (error) {
-        return { success: false, 
-            statusCode: 500, 
-            error: `${LIST_ENTITY_ERROR}:${error}`
-          };
+        return {
+            success: false,
+            statusCode: 500,
+            error: `${LIST_ENTITY_ERROR}:${error}`,
+        };
     }
 }
+
 
 export async function findGameByIdService(userId: number, gameId: number) {
     try {
